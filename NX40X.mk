@@ -1,4 +1,4 @@
-DEVICE_PACKAGE_OVERLAYS := device/qcom/msm8960/overlay
+DEVICE_PACKAGE_OVERLAYS := device/qcom/NX40X/overlay
 
 $(call inherit-product, device/qcom/common/common.mk)
 
@@ -21,19 +21,19 @@ PRODUCT_COPY_FILES += \
 
 # Audio configuration file
 PRODUCT_COPY_FILES += \
-    device/qcom/msm8960/audio_policy.conf:system/etc/audio_policy.conf \
+    device/qcom/NX40X/audio_policy.conf:system/etc/audio_policy.conf \
 
 # audio UCM files
-PRODUCT_COPY_FILES += device/qcom/msm8960/snd_soc_msm/snd_soc_msm_2x:system/etc/snd_soc_msm/snd_soc_msm_2x \
-                      device/qcom/msm8960/snd_soc_msm/snd_soc_msm_2x_Fusion3:system/etc/snd_soc_msm/snd_soc_msm_2x_Fusion3 \
-                      device/qcom/msm8960/snd_soc_msm/snd_soc_msm_2x_Fusion3_auxpcm:system/etc/snd_soc_msm/snd_soc_msm_2x_Fusion3_auxpcm \
-                      device/qcom/msm8960/snd_soc_msm/snd_soc_msm_2x_auxpcm:system/etc/snd_soc_msm/snd_soc_msm_2x_auxpcm \
-                      device/qcom/msm8960/snd_soc_msm/snd_soc_msm_I2S:system/etc/snd_soc_msm/snd_soc_msm_I2S \
-                      device/qcom/msm8960/snd_soc_msm/snd_soc_msm_I2SFusion:system/etc/snd_soc_msm/snd_soc_msm_I2SFusion \
-                      device/qcom/msm8960/snd_soc_msm/snd_soc_msm_Sitar:system/etc/snd_soc_msm/snd_soc_msm_Sitar \
-                      device/qcom/msm8960/snd_soc_msm/snd_soc_msm_Sitar_Sglte:system/etc/snd_soc_msm/snd_soc_msm_Sitar_Sglte \
-                      device/qcom/msm8960/snd_soc_msm/snd_soc_msm_Sitar_auxpcm:system/etc/snd_soc_msm/snd_soc_msm_Sitar_auxpcm \
-                      device/qcom/msm8960/snd_soc_msm/snd_soc_msm_auxpcm:system/etc/snd_soc_msm/snd_soc_msm_auxpcm \
+PRODUCT_COPY_FILES += device/qcom/NX40X/snd_soc_msm/snd_soc_msm_2x:system/etc/snd_soc_msm/snd_soc_msm_2x \
+                      device/qcom/NX40X/snd_soc_msm/snd_soc_msm_2x_Fusion3:system/etc/snd_soc_msm/snd_soc_msm_2x_Fusion3 \
+                      device/qcom/NX40X/snd_soc_msm/snd_soc_msm_2x_Fusion3_auxpcm:system/etc/snd_soc_msm/snd_soc_msm_2x_Fusion3_auxpcm \
+                      device/qcom/NX40X/snd_soc_msm/snd_soc_msm_2x_auxpcm:system/etc/snd_soc_msm/snd_soc_msm_2x_auxpcm \
+                      device/qcom/NX40X/snd_soc_msm/snd_soc_msm_I2S:system/etc/snd_soc_msm/snd_soc_msm_I2S \
+                      device/qcom/NX40X/snd_soc_msm/snd_soc_msm_I2SFusion:system/etc/snd_soc_msm/snd_soc_msm_I2SFusion \
+                      device/qcom/NX40X/snd_soc_msm/snd_soc_msm_Sitar:system/etc/snd_soc_msm/snd_soc_msm_Sitar \
+                      device/qcom/NX40X/snd_soc_msm/snd_soc_msm_Sitar_Sglte:system/etc/snd_soc_msm/snd_soc_msm_Sitar_Sglte \
+                      device/qcom/NX40X/snd_soc_msm/snd_soc_msm_Sitar_auxpcm:system/etc/snd_soc_msm/snd_soc_msm_Sitar_auxpcm \
+                      device/qcom/NX40X/snd_soc_msm/snd_soc_msm_auxpcm:system/etc/snd_soc_msm/snd_soc_msm_auxpcm \
 
 PRODUCT_PACKAGES += \
     battery_monitor \
@@ -51,6 +51,6 @@ PRODUCT_PACKAGES += fstab.qcom
 
 #wlan driver
 PRODUCT_COPY_FILES += \
-    device/qcom/msm8960/WCNSS_cfg.dat:system/etc/firmware/wlan/prima/WCNSS_cfg.dat \
-    device/qcom/msm8960/WCNSS_qcom_cfg.ini:system/etc/wifi/WCNSS_qcom_cfg.ini \
-    device/qcom/msm8960/WCNSS_qcom_wlan_nv.bin:persist/WCNSS_qcom_wlan_nv.bin
+    device/qcom/NX40X/WCNSS_cfg.dat:system/etc/firmware/wlan/prima/WCNSS_cfg.dat \
+    device/qcom/NX40X/WCNSS_qcom_cfg.ini:system/etc/wifi/WCNSS_qcom_cfg.ini \
+    device/qcom/NX40X/WCNSS_qcom_wlan_nv.bin:persist/WCNSS_qcom_wlan_nv.bin

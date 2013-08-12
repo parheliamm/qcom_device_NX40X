@@ -51,6 +51,8 @@ BOARD_PERSISTIMAGE_FILE_SYSTEM_TYPE := ext4
 
 BOARD_KERNEL_CMDLINE := console=ttyHSL0,115200,n8 androidboot.hardware=qcom user_debug=31 msm_rtb.filter=0x3F ehci-hcd.park=3 maxcpus=2 vmalloc=480M
 BOARD_EGL_CFG := device/qcom/$(TARGET_PRODUCT)/egl.cfg
+TARGET_PREBUILT_KERNEL := device/qcom/NX40X/kernel
+
 
 BOARD_BOOTIMAGE_PARTITION_SIZE := 15728640 # 15M
 BOARD_RECOVERYIMAGE_PARTITION_SIZE := 15728640 # 22M
