@@ -49,6 +49,7 @@ PRODUCT_PACKAGES += HoloSpiralWallpaper
 PRODUCT_PACKAGES += MagicSmokeWallpapers
 PRODUCT_PACKAGES += NoiseField
 PRODUCT_PACKAGES += PhaseBeam
+PRODUCT_PACKAGES += bluetoothd
 
 #fstab.qcom
 PRODUCT_PACKAGES += fstab.qcom
