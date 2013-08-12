@@ -8,9 +8,13 @@ $(call inherit-product, device/qcom/common/common.mk)
 ## Device identifier. This must come after all inclusions
 PRODUCT_DEVICE := NX40X
 PRODUCT_NAME := NX40X
-#PRODUCT_BRAND := nubia
-#PRODUCT_MODEL := NX40X
-#PRODUCT_MANUFACTURER := nubia
+PRODUCT_BRAND := nubia
+PRODUCT_MODEL := NX40X
+PRODUCT_MANUFACTURER := nubia
+
+#Touch screen idc
+PRODUCT_COPY_FILES += \
+    device/qcom/NX40X/cyttsp4_mt.idc:system/usr/idc/cyttsp4_mt.idc \
 
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.sensor.barometer.xml:system/etc/permissions/android.hardware.sensor.barometer.xml \

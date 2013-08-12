@@ -22,7 +22,7 @@ dalvik.vm.heapsize=36m
 debug.enable.wl_log=1
 persist.hwc.mdpcomp.enable=true
 debug.mdpcomp.logs=0
-
+ro.sf.lcd_density=320
 #
 # system props for the cne module
 #
@@ -120,7 +120,7 @@ ro.warmboot.capability=1
 #
 ro.qc.sdk.audio.ssr=false
 ##fluencetype can be "fluence" or "fluencepro" or "none"
-ro.qc.sdk.audio.fluencetype=none
+ro.qc.sdk.audio.fluencetype=fluence
 ro.qc.sdk.camera.facialproc=true
 ro.qc.sdk.gestures.camera=false
 ro.qc.sdk.sensors.gestures=true
