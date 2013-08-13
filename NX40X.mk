@@ -15,6 +15,8 @@ PRODUCT_MANUFACTURER := nubia
 #Touch screen idc
 PRODUCT_COPY_FILES += \
     device/qcom/NX40X/cyttsp4_mt.idc:system/usr/idc/cyttsp4_mt.idc \
+    device/qcom/NX40X/akmd8963:system/bin/akmd8963 \
+    device/qcom/NX40X/sensors.msm8960.so:system/lib/hw/sensors.msm8960.so \
 
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.sensor.barometer.xml:system/etc/permissions/android.hardware.sensor.barometer.xml \
