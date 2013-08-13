@@ -63,4 +63,4 @@ PRODUCT_COPY_FILES += \
     device/qcom/NX40X/WCNSS_qcom_wlan_nv.bin:persist/WCNSS_qcom_wlan_nv.bin 
 
 #GMS
-#include vendor/google/products/gms.mk
+include vendor/google/products/gms.mk
