@@ -55,6 +55,8 @@ PRODUCT_PACKAGES += bluetoothd
 
 #fstab.qcom
 PRODUCT_PACKAGES += fstab.qcom
+PRODUCT_PACKAGES += init.qcom.rc
+PRODUCT_PACKAGES += init.qcom.sh
 
 #wlan driver
 PRODUCT_COPY_FILES += \
@@ -63,4 +65,4 @@ PRODUCT_COPY_FILES += \
     device/qcom/NX40X/WCNSS_qcom_wlan_nv.bin:persist/WCNSS_qcom_wlan_nv.bin 
 
 #GMS
-include vendor/google/products/gms.mk
+#include vendor/google/products/gms.mk

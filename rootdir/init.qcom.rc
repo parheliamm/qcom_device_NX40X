@@ -608,12 +608,14 @@ service profiler_daemon /system/bin/profiler_daemon
     group root
     disabled
 
-service sdcard /system/bin/sdcard /data/media /mnt/shell/emulated 1023 1023
-    class late_start
-    disabled
+# ZTEMT: Modified
+#service sdcard /system/bin/sdcard /data/media /mnt/shell/emulated 1023 1023
+#    class late_start
+#    disabled
 
-on property:ro.fuse_sdcard=true
-    start sdcard
+#on property:ro.fuse_sdcard=true
+#    start sdcard
+# ZTEMT: End
 
 # Binding fuse mount point to /storage/emulated/legacy
 on property:init.svc.sdcard=running
