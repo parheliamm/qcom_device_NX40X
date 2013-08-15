@@ -92,3 +92,11 @@ PROTOBUF_SUPPORTED := true
 
 TARGET_USES_ION := true
 TARGET_ADDITIONAL_BOOTCLASSPATH := qcmediaplayer:WfdCommon
+ADDITIONAL_BUILD_PROPERTIES+= \
+persist.sys.language=zh \
+persist.sys.country=CN \
+persist.sys.power.sound=1 \
+ro.com.android.mobiledata=false \
+persist.sys.ringtone.fadein=1 \
+persist.sys.timezone=Asia/Shanghai \
+ro.telephony.default_network=7 \

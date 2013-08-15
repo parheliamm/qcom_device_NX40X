@@ -148,8 +148,8 @@ on post-fs-data
     mkdir /data/media 0775 media_rw media_rw
     chown media_rw media_rw /data/media
 
-    wait /dev/block/platform/msm_sdcc.1/by-name/grow
-    mount vfat /dev/block/platform/msm_sdcc.1/by-name/grow /data/media uid=1023,gid=1023
+#    wait /dev/block/platform/msm_sdcc.1/by-name/grow
+#    mount vfat /dev/block/platform/msm_sdcc.1/by-name/grow /data/media uid=1023,gid=1023
 
     mkdir /data/misc/bluetooth 0770 bluetooth bluetooth
 
