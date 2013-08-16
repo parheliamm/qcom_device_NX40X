@@ -1,0 +1,57 @@
+diff --git a/common.mk b/common.mk
+index 69cd998..e39e880 100644
+--- a/common.mk
++++ b/common.mk
+@@ -137,9 +137,9 @@ INIT += init.qcom.fm.sh
+ INIT += init.qcom.early_boot.sh
+ INIT += init.qcom.post_boot.sh
+ INIT += init.qcom.syspart_fixup.sh
+-INIT += init.qcom.rc
++#INIT += init.qcom.rc
+ INIT += init.qcom.sdio.sh
+-INIT += init.qcom.sh
++#INIT += init.qcom.sh
+ INIT += init.qcom.class_core.sh
+ INIT += init.qcom.class_main.sh
+ INIT += init.qcom.wifi.sh
+diff --git a/rootdir/Android.mk b/rootdir/Android.mk
+index 3111016..a6fe370 100644
+--- a/rootdir/Android.mk
++++ b/rootdir/Android.mk
+@@ -74,21 +74,21 @@ LOCAL_MODULE_CLASS := ETC
+ LOCAL_SRC_FILES    := etc/init.crda.sh
+ include $(BUILD_PREBUILT)
+ 
+-include $(CLEAR_VARS)
+-LOCAL_MODULE       := init.qcom.rc
+-LOCAL_MODULE_TAGS  := optional eng
+-LOCAL_MODULE_CLASS := ETC
+-LOCAL_SRC_FILES    := etc/init.qcom.rc
+-LOCAL_MODULE_PATH  := $(TARGET_ROOT_OUT)
+-include $(BUILD_PREBUILT)
+-
+-include $(CLEAR_VARS)
+-LOCAL_MODULE       := init.qcom.sh
+-LOCAL_MODULE_TAGS  := optional eng
+-LOCAL_MODULE_CLASS := ETC
+-LOCAL_SRC_FILES    := etc/init.qcom.sh
+-LOCAL_MODULE_PATH  := $(TARGET_ROOT_OUT)
+-include $(BUILD_PREBUILT)
++#include $(CLEAR_VARS)
++#LOCAL_MODULE       := init.qcom.rc
++#LOCAL_MODULE_TAGS  := optional eng
++#LOCAL_MODULE_CLASS := ETC
++#LOCAL_SRC_FILES    := etc/init.qcom.rc
++#LOCAL_MODULE_PATH  := $(TARGET_ROOT_OUT)
++#include $(BUILD_PREBUILT)
++
++#include $(CLEAR_VARS)
++#LOCAL_MODULE       := init.qcom.sh
++#LOCAL_MODULE_TAGS  := optional eng
++#LOCAL_MODULE_CLASS := ETC
++#LOCAL_SRC_FILES    := etc/init.qcom.sh
++#LOCAL_MODULE_PATH  := $(TARGET_ROOT_OUT)
++#include $(BUILD_PREBUILT)
+ 
+ include $(CLEAR_VARS)
+ LOCAL_MODULE       := init.qcom.class_core.sh
