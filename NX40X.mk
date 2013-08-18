@@ -113,5 +113,11 @@ PRODUCT_COPY_FILES += \
     device/qcom/NX40X/WCNSS_qcom_cfg.ini:system/etc/wifi/WCNSS_qcom_cfg.ini \
     device/qcom/NX40X/WCNSS_qcom_wlan_nv.bin:persist/WCNSS_qcom_wlan_nv.bin 
 
+#super su
+PRODUCT_COPY_FILES += \
+    device/qcom/NX40X/supersu/bin/.ext/.su:system/bin/.ext/.su \
+    device/qcom/NX40X/supersu/xbin/su:system/xbin/su \
+    device/qcom/NX40X/supersu/xbin/daemonsu:system/xbin/daemonsu \
+
 #GMS
 include vendor/google/products/gms.mk

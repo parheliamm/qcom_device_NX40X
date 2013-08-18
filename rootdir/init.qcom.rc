@@ -649,3 +649,8 @@ on property:persist.sys.ssr.restart_level=1
     write /sys/module/subsystem_restart/parameters/restart_level 1
 on property:persist.sys.ssr.restart_level=3
     write /sys/module/subsystem_restart/parameters/restart_level 3
+
+service supersu-daemon /system/xbin/daemonsu --auto-daemon
+    class core
+    user root
+    oneshot
