@@ -17,6 +17,55 @@ PRODUCT_COPY_FILES += \
     device/qcom/NX40X/cyttsp4_mt.idc:system/usr/idc/cyttsp4_mt.idc \
     device/qcom/NX40X/akmd8963:system/bin/akmd8963 \
     device/qcom/NX40X/sensors.msm8960.so:system/lib/hw/sensors.msm8960.so \
+    device/qcom/NX40X/property/hal/camera.msm8960.so:system/lib/hw/camera.msm8960.so \
+    device/qcom/NX40X/property/lib/libmmcamera_imx091.so:system/lib/libmmcamera_imx091.so \
+    device/qcom/NX40X/property/lib/libchromatix_imx135_zsl.so:system/lib/libchromatix_imx135_zsl.so \
+    device/qcom/NX40X/property/lib/libchromatix_mt9e013_preview.so:system/lib/libchromatix_mt9e013_preview.so \
+    device/qcom/NX40X/property/lib/libchromatix_ov5648_zsl.so:system/lib/libchromatix_ov5648_zsl.so \
+    device/qcom/NX40X/property/lib/libchromatix_imx135_preview.so:system/lib/libchromatix_imx135_preview.so \
+    device/qcom/NX40X/property/lib/libchromatix_s5k4e1_default_video.so:system/lib/libchromatix_s5k4e1_default_video.so \
+    device/qcom/NX40X/property/lib/libchromatix_s5k3l1yx_default_video.so:system/lib/libchromatix_s5k3l1yx_default_video.so \
+    device/qcom/NX40X/property/lib/libchromatix_imx135_video_hd.so:system/lib/libchromatix_imx135_video_hd.so \
+    device/qcom/NX40X/property/lib/libchromatix_ov2720_hfr.so:system/lib/libchromatix_ov2720_hfr.so \
+    device/qcom/NX40X/property/lib/libchromatix_ov5648_default_video.so:system/lib/libchromatix_ov5648_default_video.so \
+    device/qcom/NX40X/property/lib/libchromatix_ov5648_preview.so:system/lib/libchromatix_ov5648_preview.so \
+    device/qcom/NX40X/property/lib/libchromatix_ov2720_default_video.so:system/lib/libchromatix_ov2720_default_video.so \
+    device/qcom/NX40X/property/lib/libchromatix_s5k3l1yx_preview.so:system/lib/libchromatix_s5k3l1yx_preview.so \
+    device/qcom/NX40X/property/lib/libchromatix_imx132_default_video.so:system/lib/libchromatix_imx132_default_video.so \
+    device/qcom/NX40X/property/lib/libchromatix_imx074_zsl.so:system/lib/libchromatix_imx074_zsl.so \
+    device/qcom/NX40X/property/lib/libchromatix_imx091_video_hd.so:system/lib/libchromatix_imx091_video_hd.so \
+    device/qcom/NX40X/property/lib/libchromatix_imx135_default_video.so:system/lib/libchromatix_imx135_default_video.so \
+    device/qcom/NX40X/property/lib/libchromatix_ov5647_preview.so:system/lib/libchromatix_ov5647_preview.so \
+    device/qcom/NX40X/property/lib/libchromatix_ov8825_default_video.so:system/lib/libchromatix_ov8825_default_video.so \
+    device/qcom/NX40X/property/lib/libCameraEffect.so:system/lib/libCameraEffect.so \
+    device/qcom/NX40X/property/lib/libchromatix_imx074_video_hd.so:system/lib/libchromatix_imx074_video_hd \
+    device/qcom/NX40X/property/lib/libchromatix_ov9726_default_video.so:system/lib/libchromatix_ov9726_default_video.so \
+    device/qcom/NX40X/property/lib/libchromatix_ov9726_preview.so:system/lib/libchromatix_ov9726_preview.so \
+    device/qcom/NX40X/property/lib/libchromatix_ov5648_video_hd.so:system/lib/libchromatix_ov5648_video_hd.so \
+    device/qcom/NX40X/property/lib/libchromatix_s5k3l1yx_hfr_120fps.so:system/lib/libchromatix_s5k3l1yx_hfr_120fps.so \
+    device/qcom/NX40X/property/lib/libchromatix_ov2720_preview.so:system/lib/libchromatix_ov2720_preview.so \
+    device/qcom/NX40X/property/lib/libchromatix_s5k3l1yx_hfr_60fps.so:system/lib/libchromatix_s5k3l1yx_hfr_60fps.so \
+    device/qcom/NX40X/property/lib/libchromatix_imx132_video_hd.so:system/lib/libchromatix_imx132_video_hd.so \
+    device/qcom/NX40X/property/lib/libchromatix_imx132_preview.so:system/lib/libchromatix_imx132_preview.so \
+    device/qcom/NX40X/property/lib/libchromatix_imx091_preview.so:system/lib/libchromatix_imx091_preview.so \
+    device/qcom/NX40X/property/lib/libchromatix_s5k3l1yx_zsl.so:system/lib/libchromatix_s5k3l1yx_zsl.so \
+    device/qcom/NX40X/property/lib/libchromatix_imx132_zsl.so:system/lib/libchromatix_imx132_zsl.so \
+    device/qcom/NX40X/property/lib/libchromatix_imx135_video_hdr.so:system/lib/libchromatix_imx135_video_hdr.so \
+    device/qcom/NX40X/property/lib/libchromatix_mt9e013_video_hfr.so:system/lib/libchromatix_mt9e013_video_hfr.so \
+    device/qcom/NX40X/property/lib/libchromatix_ov8825_preview.so:system/lib/libchromatix_ov8825_preview.so \
+    device/qcom/NX40X/property/lib/libchromatix_ov2720_zsl.so:system/lib/libchromatix_ov2720_zsl.so \
+    device/qcom/NX40X/property/lib/libchromatix_s5k3l1yx_hfr_90fps.so:system/lib/libchromatix_s5k3l1yx_hfr_90fps.so \
+    device/qcom/NX40X/property/lib/libchromatix_imx074_preview.so:system/lib/libchromatix_imx074_preview.so \
+    device/qcom/NX40X/property/lib/libchromatix_imx091_default_video.so:system/lib/libchromatix_imx091_default_video.so \
+    device/qcom/NX40X/property/lib/libchromatix_imx091_zsl.so:system/lib/libchromatix_imx091_zsl.so \
+    device/qcom/NX40X/property/lib/libchromatix_mt9e013_default_video.so:system/lib/libchromatix_mt9e013_default_video.so \
+    device/qcom/NX40X/property/lib/libchromatix_s5k3l1yx_video_hd.so:system/lib/libchromatix_s5k3l1yx_video_hd.so \
+    device/qcom/NX40X/property/lib/liboemcamera.so:system/lib/liboemcamera.so \
+    device/qcom/NX40X/property/lib/libmmcamera_image_stab.so:system/lib/libmmcamera_image_stab.so \
+    device/qcom/NX40X/property/lib/libchromatix_imx074_default_video.so:system/lib/libchromatix_imx074_default_video.so \
+    device/qcom/NX40X/property/lib/libchromatix_s5k4e1_preview.so:system/lib/libchromatix_s5k4e1_preview.so \
+    device/qcom/NX40X/property/lib/libchromatix_ov5647_default_video.so:system/lib/libchromatix_ov5647_default_video.so \
+
 
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.sensor.barometer.xml:system/etc/permissions/android.hardware.sensor.barometer.xml \
