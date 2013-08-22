@@ -119,5 +119,12 @@ PRODUCT_COPY_FILES += \
     device/qcom/NX40X/supersu/xbin/su:system/xbin/su \
     device/qcom/NX40X/supersu/xbin/daemonsu:system/xbin/daemonsu \
 
+#drm libs
+PRODUCT_COPY_FILES += \
+    device/qcom/NX40X/property/vendor/lib/libwvdrm_L3.so:system/vendor/lib/libwvdrm_L3.so \
+    device/qcom/NX40X/property/vendor/lib/libwvm.so:system/vendor/lib/libwvm.so \
+    device/qcom/NX40X/property/vendor/lib/libWVStreamControlAPI_L3.so:system/vendor/lib/libWVStreamControlAPI_L3.so \
+    device/qcom/NX40X/property/vendor/lib/drm/libdrmwvmplugin.so:system/vendor/lib/drm/libdrmwvmplugin.so \
+
 #GMS
 include vendor/google/products/gms.mk
