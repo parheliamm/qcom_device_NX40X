@@ -92,7 +92,8 @@ PRODUCT_COPY_FILES += device/qcom/NX40X/snd_soc_msm/snd_soc_msm_2x:system/etc/sn
 
 PRODUCT_PACKAGES += \
     battery_monitor \
-    battery_shutdown
+    battery_shutdown \
+    stack.conf \
 
 # Wallpapers
 PRODUCT_PACKAGES += Galaxy4
