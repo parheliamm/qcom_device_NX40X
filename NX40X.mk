@@ -102,6 +102,7 @@ PRODUCT_PACKAGES += MagicSmokeWallpapers
 PRODUCT_PACKAGES += NoiseField
 PRODUCT_PACKAGES += PhaseBeam
 PRODUCT_PACKAGES += bluetoothd
+PRODUCT_PACKAGES += Superuser
 
 #fstab.qcom
 PRODUCT_PACKAGES += fstab.qcom
@@ -112,7 +113,7 @@ PRODUCT_PACKAGES += init.qcom.sh
 PRODUCT_COPY_FILES += \
     device/qcom/NX40X/WCNSS_cfg.dat:system/etc/firmware/wlan/prima/WCNSS_cfg.dat \
     device/qcom/NX40X/WCNSS_qcom_cfg.ini:system/etc/wifi/WCNSS_qcom_cfg.ini \
-    device/qcom/NX40X/WCNSS_qcom_wlan_nv.bin:persist/WCNSS_qcom_wlan_nv.bin 
+    device/qcom/NX40X/WCNSS_qcom_wlan_nv.bin:persist/WCNSS_qcom_wlan_nv.bin \
 
 #super su
 PRODUCT_COPY_FILES += \

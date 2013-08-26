@@ -1,5 +1,5 @@
 diff --git a/common.mk b/common.mk
-index 69cd998..17fe55c 100644
+index 69cd998..3ca4bb9 100644
 --- a/common.mk
 +++ b/common.mk
 @@ -137,9 +137,9 @@ INIT += init.qcom.fm.sh
@@ -14,7 +14,17 @@ index 69cd998..17fe55c 100644
  INIT += init.qcom.class_core.sh
  INIT += init.qcom.class_main.sh
  INIT += init.qcom.wifi.sh
-@@ -587,6 +587,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
+@@ -579,14 +579,14 @@ $(call inherit-product-if-exists, vendor/qcom/proprietary/common/config/device-v
+ $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
+ 
+ PRODUCT_BRAND := qcom
+-PRODUCT_LOCALES := en_US es_US de_DE zh_CN
+-PRODUCT_LOCALES += hdpi mdpi
++PRODUCT_LOCALES := en_US es_US zh_CN
++PRODUCT_LOCALES += hdpi mdpi xhdpi
+ 
+ PRODUCT_PROPERTY_OVERRIDES += \
+     ro.vendor.extension_library=/system/lib/libqc-opt.so
  
  PRODUCT_PRIVATE_KEY := device/qcom/common/qcom.key
  
@@ -63,3 +73,81 @@ index 3111016..a6fe370 100644
  
  include $(CLEAR_VARS)
  LOCAL_MODULE       := init.qcom.class_core.sh
+diff --git a/rootdir/etc/init.qcom.post_boot.sh b/rootdir/etc/init.qcom.post_boot.sh
+index 8d9afd2..a1ed77a 100755
+--- a/rootdir/etc/init.qcom.post_boot.sh
++++ b/rootdir/etc/init.qcom.post_boot.sh
+@@ -115,36 +115,43 @@ case "$target" in
+          echo 1 > /sys/devices/system/cpu/cpu1/online
+          echo 1 > /sys/devices/system/cpu/cpu2/online
+          echo 1 > /sys/devices/system/cpu/cpu3/online
+-         echo "ondemand" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+-         echo "ondemand" > /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor
+-         echo "ondemand" > /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor
+-         echo "ondemand" > /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor
+-         echo 50000 > /sys/devices/system/cpu/cpufreq/ondemand/sampling_rate
+-         echo 90 > /sys/devices/system/cpu/cpufreq/ondemand/up_threshold
+-         echo 1 > /sys/devices/system/cpu/cpufreq/ondemand/io_is_busy
+-         echo 4 > /sys/devices/system/cpu/cpufreq/ondemand/sampling_down_factor
+-         echo 10 > /sys/devices/system/cpu/cpufreq/ondemand/down_differential
+-         echo 70 > /sys/devices/system/cpu/cpufreq/ondemand/up_threshold_multi_core
+-         echo 3 > /sys/devices/system/cpu/cpufreq/ondemand/down_differential_multi_core
+-         echo 918000 > /sys/devices/system/cpu/cpufreq/ondemand/optimal_freq
+-         echo 1026000 > /sys/devices/system/cpu/cpufreq/ondemand/sync_freq
+-         echo 80 > /sys/devices/system/cpu/cpufreq/ondemand/up_threshold_any_cpu_load
+-         chown system /sys/devices/system/cpu/cpufreq/ondemand/sampling_rate
+-         chown system /sys/devices/system/cpu/cpufreq/ondemand/sampling_down_factor
+-         chown system /sys/devices/system/cpu/cpufreq/ondemand/io_is_busy
+-         echo 384000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+-         echo 384000 > /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq
+-         echo 384000 > /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq
+-         echo 384000 > /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq
+-         chown system /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+-         chown system /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+-         chown system /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq
+-         chown system /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq
+-         chown system /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq
+-         chown system /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq
+-         chown system /sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq
+-         chown system /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq
+-	 echo 1 > /sys/module/msm_thermal/core_control/enabled
++         #echo "ondemand" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
++         #echo "ondemand" > /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor
++         #echo "ondemand" > /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor
++         #echo "ondemand" > /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor
++         #echo 50000 > /sys/devices/system/cpu/cpufreq/ondemand/sampling_rate
++         #echo 90 > /sys/devices/system/cpu/cpufreq/ondemand/up_threshold
++         #echo 1 > /sys/devices/system/cpu/cpufreq/ondemand/io_is_busy
++         #echo 4 > /sys/devices/system/cpu/cpufreq/ondemand/sampling_down_factor
++         #echo 10 > /sys/devices/system/cpu/cpufreq/ondemand/down_differential
++         #echo 70 > /sys/devices/system/cpu/cpufreq/ondemand/up_threshold_multi_core
++         #echo 3 > /sys/devices/system/cpu/cpufreq/ondemand/down_differential_multi_core
++         #echo 918000 > /sys/devices/system/cpu/cpufreq/ondemand/optimal_freq
++         #echo 1026000 > /sys/devices/system/cpu/cpufreq/ondemand/sync_freq
++         #echo 80 > /sys/devices/system/cpu/cpufreq/ondemand/up_threshold_any_cpu_load
++         #chown system /sys/devices/system/cpu/cpufreq/ondemand/sampling_rate
++         #chown system /sys/devices/system/cpu/cpufreq/ondemand/sampling_down_factor
++         #chown system /sys/devices/system/cpu/cpufreq/ondemand/io_is_busy
++         #echo 384000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
++         #echo 384000 > /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq
++         #echo 384000 > /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq
++         #echo 384000 > /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq
++         #chown system /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
++         #chown system /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
++         #chown system /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq
++         #chown system /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq
++         #chown system /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq
++         #chown system /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq
++         #chown system /sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq
++         #chown system /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq
++         echo "interactive" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
++         echo "interactive" > /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor
++         echo "interactive" > /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor
++         echo "interactive" > /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor
++         echo 100000 > /sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay
++         echo 80 > /sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load
++         echo 40000 > /sys/devices/system/cpu/cpufreq/interactive/min_sample_time
++         echo 1 > /sys/module/msm_thermal/core_control/enabled
+          chown root.system /sys/devices/system/cpu/mfreq
+          chmod 220 /sys/devices/system/cpu/mfreq
+          chown root.system /sys/devices/system/cpu/cpu1/online
