@@ -109,6 +109,18 @@ PRODUCT_PACKAGES += fstab.qcom
 PRODUCT_PACKAGES += init.qcom.rc
 PRODUCT_PACKAGES += init.qcom.sh
 
+#ntfs & exfat
+PRODUCT_PACKAGES += badblocks
+PRODUCT_PACKAGES += fsck.exfat
+PRODUCT_PACKAGES += mke2fs
+PRODUCT_PACKAGES += mkfs.exfat
+PRODUCT_PACKAGES += mkntfs
+PRODUCT_PACKAGES += mount.exfat
+PRODUCT_PACKAGES += ntfs-3g
+PRODUCT_PACKAGES += ntfsfix
+PRODUCT_PACKAGES += tune2fs
+PRODUCT_PACKAGES += resize2fs
+
 #wlan driver
 PRODUCT_COPY_FILES += \
     device/qcom/NX40X/WCNSS_cfg.dat:system/etc/firmware/wlan/prima/WCNSS_cfg.dat \
