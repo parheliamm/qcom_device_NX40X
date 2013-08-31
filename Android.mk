@@ -2,6 +2,7 @@
 # This empty Android.mk file exists to prevent the build system from
 # automatically including any other Android.mk files under this directory.
 #
+#ifeq ($(filter NX501,$(TARGET_PRODUCT)),true)
 LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
 
@@ -38,4 +39,4 @@ LOCAL_MODULE_SUFFIX := .apk
 LOCAL_SRC_FILES    := supersu/app/Superuser.apk
 LOCAL_CERTIFICATE := PRESIGNED
 include $(BUILD_PREBUILT)
-
+#endif

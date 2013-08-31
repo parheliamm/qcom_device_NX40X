@@ -27,5 +27,5 @@
 #  IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-add_lunch_combo NX50X-userdebug
-add_lunch_combo NX50X-user
+add_lunch_combo NX501-userdebug
+add_lunch_combo NX501-user

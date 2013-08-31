@@ -22,7 +22,7 @@ dalvik.vm.heapsize=36m
 debug.enable.wl_log=1
 persist.hwc.mdpcomp.enable=true
 debug.mdpcomp.logs=0
-ro.sf.lcd_density=320
+ro.sf.lcd_density=480
 #
 # system props for the cne module
 #
