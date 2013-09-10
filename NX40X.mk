@@ -164,6 +164,9 @@ PRODUCT_COPY_FILES += \
 	device/qcom/NX40X/property/modules/evbug.ko:system/lib/modules/evbug.ko \
 	device/qcom/NX40X/property/modules/mcdrvmodule.ko:system/lib/modules/mcdrvmodule.ko \
 
+#audio cal
+PRODUCT_COPY_FILES += \
+	device/qcom/NX40X/property/audio/libaudcal.so:system/lib/libaudcal.so\
 
 #GMS
 include vendor/google/products/gms.mk
