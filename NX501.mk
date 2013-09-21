@@ -65,7 +65,13 @@ PRODUCT_COPY_FILES += \
     device/qcom/NX501/property/lib/libchromatix_imx074_default_video.so:system/lib/libchromatix_imx074_default_video.so \
     device/qcom/NX501/property/lib/libchromatix_s5k4e1_preview.so:system/lib/libchromatix_s5k4e1_preview.so \
     device/qcom/NX501/property/lib/libchromatix_ov5647_default_video.so:system/lib/libchromatix_ov5647_default_video.so \
-
+    device/qcom/NX501/property/lib/libmmcamera_3a_legacy.so:system/lib/libmmcamera_3a_legacy.so \
+    device/qcom/NX501/property/lib/libmmcamera_faceproc.so:system/lib/libmmcamera_faceproc.so \
+    device/qcom/NX501/property/lib/libmmcamera_frameproc.so:system/lib/libmmcamera_frameproc \
+    device/qcom/NX501/property/lib/libmmcamera_statsproc31.so:system/lib/libmmcamera_statsproc31.so \
+    device/qcom/NX501/property/lib/libmmcamera_plugin.so:system/lib/libmmcamera_plugin.so \
+device/qcom/NX501/property/bin/mm-qcamera-daemon:system/lib/mm-qcamera-daemon \
+device/qcom/NX501/property/bin/v4l2-qcamera-app:system/lib/v4l2-qcamera-app \
 
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.sensor.barometer.xml:system/etc/permissions/android.hardware.sensor.barometer.xml \
@@ -167,6 +173,14 @@ PRODUCT_COPY_FILES += \
 	device/qcom/NX501/property/modules/dma_test.ko:system/lib/modules/dma_test.ko \
 	device/qcom/NX501/property/modules/evbug.ko:system/lib/modules/evbug.ko \
 	device/qcom/NX501/property/modules/mcdrvmodule.ko:system/lib/modules/mcdrvmodule.ko \
+
+#audio cal
+PRODUCT_COPY_FILES += \
+	device/qcom/NX501/property/audio/libaudcal.so:system/lib/libaudcal.so\
+
+#Thermal confi
+PRODUCT_COPY_FILES += \
+	device/qcom/NX501/property/thermald-8064.conf:system/etc/thermald-8064.conf\
 
 #GMS
 include vendor/google/products/gms.mk
