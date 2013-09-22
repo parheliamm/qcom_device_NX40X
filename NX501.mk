@@ -70,8 +70,8 @@ PRODUCT_COPY_FILES += \
     device/qcom/NX501/property/lib/libmmcamera_frameproc.so:system/lib/libmmcamera_frameproc \
     device/qcom/NX501/property/lib/libmmcamera_statsproc31.so:system/lib/libmmcamera_statsproc31.so \
     device/qcom/NX501/property/lib/libmmcamera_plugin.so:system/lib/libmmcamera_plugin.so \
-device/qcom/NX501/property/bin/mm-qcamera-daemon:system/lib/mm-qcamera-daemon \
-device/qcom/NX501/property/bin/v4l2-qcamera-app:system/lib/v4l2-qcamera-app \
+    device/qcom/NX501/property/bin/mm-qcamera-daemon:system/bin/mm-qcamera-daemon \
+    device/qcom/NX501/property/bin/v4l2-qcamera-app:system/bin/v4l2-qcamera-app \
 
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.sensor.barometer.xml:system/etc/permissions/android.hardware.sensor.barometer.xml \

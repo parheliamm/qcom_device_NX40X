@@ -34,19 +34,23 @@ on init
     # See storage config details at http://source.android.com/tech/storage/
     mkdir /mnt/shell/emulated 0700 shell shell
     mkdir /storage 0550 system sdcard_r
-    mkdir /storage/emulated 0555 root root
-    mkdir /storage/emulated/legacy 0555 root root
+    #mkdir /storage/emulated 0555 root root
+    #mkdir /storage/emulated/legacy 0555 root root
+    mkdir /storage/sdcard0 0000 system system
     mkdir /storage/sdcard1 0000 system system
+    symlink /storage/sdcard0 /sdcard
+    symlink /storage/sdcard0 /mnt/sdcard
 
-    export EXTERNAL_STORAGE /storage/emulated/legacy
+    export EXTERNAL_STORAGE /storage/sdcard0
     export SECONDARY_STORAGE /storage/sdcard1
-    export EMULATED_STORAGE_SOURCE /mnt/shell/emulated
-    export EMULATED_STORAGE_TARGET /storage/emulated
+
+    #export EMULATED_STORAGE_SOURCE /mnt/shell/emulated
+    #export EMULATED_STORAGE_TARGET /storage/emulated
 
     # Support legacy paths
-    symlink /storage/emulated/legacy /sdcard
-    symlink /storage/emulated/legacy /mnt/sdcard
-    symlink /storage/emulated/legacy /storage/sdcard0
+    #symlink /storage/emulated/legacy /sdcard
+    #symlink /storage/emulated/legacy /mnt/sdcard
+    #symlink /storage/emulated/legacy /storage/sdcard0
 
 on early-boot
     # set RLIMIT_MEMLOCK to 64MB
@@ -148,8 +152,8 @@ on post-fs-data
     mkdir /data/media 0775 media_rw media_rw
     chown media_rw media_rw /data/media
 
-    wait /dev/block/platform/msm_sdcc.1/by-name/grow
-    mount vfat /dev/block/platform/msm_sdcc.1/by-name/grow /data/media uid=1023,gid=1023
+#    wait /dev/block/platform/msm_sdcc.1/by-name/grow
+#    mount vfat /dev/block/platform/msm_sdcc.1/by-name/grow /data/media uid=1023,gid=1023
 
     mkdir /data/misc/bluetooth 0770 bluetooth bluetooth
 
@@ -611,12 +615,12 @@ service profiler_daemon /system/bin/profiler_daemon
     group root
     disabled
 
-service sdcard /system/bin/sdcard /data/media /mnt/shell/emulated 1023 1023
-    class late_start
-    disabled
+#service sdcard /system/bin/sdcard /data/media /mnt/shell/emulated 1023 1023
+#    class late_start
+#    disabled
 
-on property:ro.fuse_sdcard=true
-    start sdcard
+#on property:ro.fuse_sdcard=true
+#    start sdcard
 
 # Binding fuse mount point to /storage/emulated/legacy
 on property:init.svc.sdcard=running
