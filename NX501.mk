@@ -74,6 +74,9 @@ PRODUCT_COPY_FILES += \
     device/qcom/NX501/property/bin/v4l2-qcamera-app:system/bin/v4l2-qcamera-app \
 
 PRODUCT_COPY_FILES += \
+    device/qcom/NX501/property/hosts:system/etc/hosts \
+
+PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.sensor.barometer.xml:system/etc/permissions/android.hardware.sensor.barometer.xml \
 
 # Bluetooth configuration files
