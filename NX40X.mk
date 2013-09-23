@@ -15,8 +15,8 @@ PRODUCT_MANUFACTURER := nubia
 #Touch screen idc
 PRODUCT_COPY_FILES += \
     device/qcom/NX40X/cyttsp4_mt.idc:system/usr/idc/cyttsp4_mt.idc \
-    device/qcom/NX40X/akmd8963:system/bin/akmd8963 \
-    device/qcom/NX40X/sensors.msm8960.so:system/lib/hw/sensors.msm8960.so \
+    device/qcom/NX40X/property/bin/akmd8963:system/bin/akmd8963 \
+    device/qcom/NX40X/property/hal/sensors.msm8960.so:system/lib/hw/sensors.msm8960.so \
     device/qcom/NX40X/property/hal/camera.msm8960.so:system/lib/hw/camera.msm8960.so \
     device/qcom/NX40X/property/lib/libmmcamera_imx091.so:system/lib/libmmcamera_imx091.so \
     device/qcom/NX40X/property/lib/libchromatix_imx135_zsl.so:system/lib/libchromatix_imx135_zsl.so \
