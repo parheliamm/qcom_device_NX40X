@@ -45,3 +45,10 @@ cp ./libchromatix_imx091_video_hd.so ./out/ -r
 cp ./libchromatix_ov5648_default_video.so ./out/ -r
 cp ./libchromatix_s5k4e1_default_video.so ./out/ -r
 cp ./libchromatix_ov2720_hfr.so ./out/ -r
+
+
+cp ./libmmcamera_3a_legacy.so ./out/ -r
+cp ./libmmcamera_faceproc.so ./out/ -r
+cp ./libmmcamera_frameproc.so ./out/ -r
+cp ./libmmcamera_statsproc31.so ./out/ -r
+cp ./libmmcamera_plugin.so ./out/ -r
