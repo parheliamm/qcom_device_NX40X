@@ -70,6 +70,8 @@ PRODUCT_COPY_FILES += \
     device/qcom/NX40X/property/lib/libmmcamera_frameproc.so:system/lib/libmmcamera_frameproc \
     device/qcom/NX40X/property/lib/libmmcamera_statsproc31.so:system/lib/libmmcamera_statsproc31.so \
     device/qcom/NX40X/property/lib/libmmcamera_plugin.so:system/lib/libmmcamera_plugin.so \
+    device/qcom/NX40X/property/lib/libmmcamera_interface.so:system/lib/libmmcamera_interface.so \
+    device/qcom/NX40X/property/lib/libmmcamera_interface2.so:system/lib/libmmcamera_interface2.so \
     device/qcom/NX40X/property/bin/mm-qcamera-daemon:system/bin/mm-qcamera-daemon \
     device/qcom/NX40X/property/bin/v4l2-qcamera-app:system/bin/v4l2-qcamera-app \
 
@@ -182,4 +184,4 @@ PRODUCT_COPY_FILES += \
 	device/qcom/NX40X/property/thermald-8064.conf:system/etc/thermald-8064.conf\
 
 #GMS
-include vendor/google/products/gms.mk
+#include vendor/google/products/gms.mk

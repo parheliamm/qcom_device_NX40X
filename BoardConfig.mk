@@ -91,7 +91,9 @@ PROTOBUF_SUPPORTED := true
 #TARGET_RECOVERY_UI_LIB := librecovery_ui_qcom
 
 TARGET_USES_ION := true
-TARGET_ADDITIONAL_BOOTCLASSPATH := qcmediaplayer:WfdCommon
+TARGET_ADDITIONAL_BOOTCLASSPATH := qcmediaplayer:WfdCommon:oem-services
+TARGET_ENABLE_QC_AV_ENHANCEMENTS := true
+
 ADDITIONAL_BUILD_PROPERTIES+= \
 persist.sys.language=zh \
 persist.sys.country=CN \
