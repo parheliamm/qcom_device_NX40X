@@ -184,4 +184,4 @@ PRODUCT_COPY_FILES += \
 	device/qcom/NX40X/property/thermald-8064.conf:system/etc/thermald-8064.conf\
 
 #GMS
-#include vendor/google/products/gms.mk
+include vendor/google/products/gms.mk
