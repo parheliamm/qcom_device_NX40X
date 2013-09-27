@@ -92,6 +92,8 @@ PROTOBUF_SUPPORTED := true
 
 TARGET_USES_ION := true
 TARGET_ADDITIONAL_BOOTCLASSPATH := qcmediaplayer:WfdCommon
+TARGET_ENABLE_QC_AV_ENHANCEMENTS := true
+
 ADDITIONAL_BUILD_PROPERTIES+= \
 persist.sys.language=zh \
 persist.sys.country=CN \
