@@ -37,7 +37,7 @@ service ril-qmi /system/bin/sh /init.qcom.ril.sh
     user root
     oneshot
 on init
-    export BOOTCLASSPATH ${BOOTCLASSPATH}:/system/framework/security-bridge.jar:/system/framework/oem-services.jar
+    export BOOTCLASSPATH ${BOOTCLASSPATH}:/system/framework/security-bridge.jar
 on fs
     mount_all fstab.qcom
 
