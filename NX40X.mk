@@ -174,6 +174,7 @@ PRODUCT_COPY_FILES += \
 	device/qcom/NX40X/property/modules/dma_test.ko:system/lib/modules/dma_test.ko \
 	device/qcom/NX40X/property/modules/evbug.ko:system/lib/modules/evbug.ko \
 	device/qcom/NX40X/property/modules/mcdrvmodule.ko:system/lib/modules/mcdrvmodule.ko \
+        device/qcom/NX40X/property/modules/prima/prima_wlan.ko:system/lib/modules/prima/prima_wlan.ko \
 
 #audio cal
 PRODUCT_COPY_FILES += \
