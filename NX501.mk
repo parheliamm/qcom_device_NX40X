@@ -182,8 +182,6 @@ PRODUCT_COPY_FILES += \
 #audio cal
 PRODUCT_COPY_FILES += \
 	device/qcom/NX501/property/audio/libaudcal.so:system/lib/libaudcal.so\
-	device/qcom/NX501/property/audio/libacdbloader.so:system/lib/libacdbloader.so\
-	device/qcom/NX501/property/audio/libcsd-client.so:system/lib/libcsd-client.so\
 
 #Thermal confi
 PRODUCT_COPY_FILES += \
