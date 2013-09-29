@@ -1,3 +1,34 @@
+diff --git a/alsa_sound/ALSADevice.cpp b/alsa_sound/ALSADevice.cpp
+index f4c5690..1b35b63 100644
+--- a/alsa_sound/ALSADevice.cpp
++++ b/alsa_sound/ALSADevice.cpp
+@@ -1258,25 +1258,11 @@ Error:
+ status_t ALSADevice::setFmVolume(int value, alsa_handle_t *handle)
+ {
+     status_t err = NO_ERROR;
+-    int ret = 0;
+-    char val_str[100], *volMixerCTL;
+-
+     if (!mIsFmEnabled) {
+         return INVALID_OPERATION;
+     }
+ 
+-    strlcpy(val_str, "PlaybackVolume/",sizeof("PlaybackVolume/"));
+-    strlcat(val_str, "Play FM", sizeof(val_str));
+-
+-    ret = snd_use_case_get(handle->ucMgr, val_str, (const char **)&volMixerCTL);
+-    if (ret < 0) {
+-        ALOGE("Failed to get volume mixer control: %s", val_str);
+-        return NAME_NOT_FOUND;
+-    } else {
+-        ALOGV("volMixerCTL %s\n", volMixerCTL);
+-    }
+-
+-    setMixerControl(volMixerCTL,value,0);
++    setMixerControl("Internal FM RX Volume",value,0);
+     mFmVolume = value;
+ 
+     return err;
 diff --git a/alsa_sound/AudioSessionOut.cpp b/alsa_sound/AudioSessionOut.cpp
 index caa87bc..c71fa34 100644
 --- a/alsa_sound/AudioSessionOut.cpp
