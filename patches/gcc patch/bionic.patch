@@ -1,0 +1,32 @@
+diff --git a/libm/arm/e_pow.S b/libm/arm/e_pow.S
+index 853615c..8a8f690 100644
+--- a/libm/arm/e_pow.S
++++ b/libm/arm/e_pow.S
+@@ -440,4 +440,4 @@ ENTRY(pow_neon)
+ 
+ .Ltwoto1o4: @ 2^1/4
+     .long       0x0a31b715, 0x3ff306fe
+-END(pow)
++END(pow_neon)
+diff --git a/linker/linker_format.c b/linker/linker_format.c
+index f60e259..74aafd2 100644
+--- a/linker/linker_format.c
++++ b/linker/linker_format.c
+@@ -167,7 +167,7 @@ format_buffer(char *buff, size_t buffsize, const char *format, ...)
+  * about 25 KB of C library routines related to formatting.
+  */
+ int
+-vsnprintf(char *buff, size_t bufsize, const char *format, va_list args)
++_vsnprintf(char *buff, size_t bufsize, const char *format, va_list args)
+ {
+     return format_buffer(buff, bufsize, format, args);
+ }
+@@ -182,7 +182,7 @@ snprintf(char* buff, size_t bufsize, const char* format, ...)
+     va_list args;
+     int ret;
+     va_start(args, format);
+-    ret = vsnprintf(buff, bufsize, format, args);
++    ret = _vsnprintf(buff, bufsize, format, args);
+     va_end(args);
+     return ret;
+ }

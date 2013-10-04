@@ -1,0 +1,14 @@
+diff --git a/Android.mk b/Android.mk
+index 15cc655..16670d4 100644
+--- a/Android.mk
++++ b/Android.mk
+@@ -69,7 +69,8 @@ ifneq ($(USE_CAMERA_STUB),true)
+ 
+       ifeq ($(V4L2_BASED_LIBCAM),true)
+ 
+-        LOCAL_CFLAGS+= -Werror
++      #  Enable this after fixing all warnings
++      #  LOCAL_CFLAGS+= -Werror
+         ifeq ($(call is-board-platform,msm7627a),true)
+           LOCAL_HAL_FILES := QCameraHAL.cpp QCameraHWI_Parm.cpp\
+             QCameraHWI.cpp QCameraHWI_Preview.cpp \

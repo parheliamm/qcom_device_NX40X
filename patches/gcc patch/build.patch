@@ -1,0 +1,48 @@
+diff --git a/core/combo/TARGET_linux-arm.mk b/core/combo/TARGET_linux-arm.mk
+index 854037d..1cf3615 100644
+--- a/core/combo/TARGET_linux-arm.mk
++++ b/core/combo/TARGET_linux-arm.mk
+@@ -43,7 +43,7 @@ include $(TARGET_ARCH_SPECIFIC_MAKEFILE)
+ 
+ # You can set TARGET_TOOLS_PREFIX to get gcc from somewhere else
+ ifeq ($(strip $(TARGET_TOOLS_PREFIX)),)
+-TARGET_TOOLCHAIN_ROOT := prebuilts/gcc/$(HOST_PREBUILT_TAG)/arm/arm-linux-androideabi-4.6
++TARGET_TOOLCHAIN_ROOT := prebuilts/gcc/$(HOST_PREBUILT_TAG)/arm/arm-linux-androideabi
+ TARGET_TOOLS_PREFIX := $(TARGET_TOOLCHAIN_ROOT)/bin/arm-linux-androideabi-
+ endif
+ 
+@@ -118,7 +118,7 @@ TARGET_GLOBAL_CFLAGS += $(TARGET_ANDROID_CONFIG_CFLAGS)
+ # We cannot turn it off blindly since the option is not available
+ # in gcc-4.4.x.  We also want to disable sincos optimization globally
+ # by turning off the builtin sin function.
+-ifneq ($(filter 4.6 4.6.%, $(shell $(TARGET_CC) --version)),)
++ifneq ($(filter 4.7 4.7.%, $(shell $(TARGET_CC) --version)),)
+ TARGET_GLOBAL_CFLAGS += -Wno-unused-but-set-variable -fno-builtin-sin \
+ 			-fno-strict-volatile-bitfields
+ endif
+diff --git a/core/combo/arch/arm/armv7-a-neon.mk b/core/combo/arch/arm/armv7-a-neon.mk
+index 32273ff..9febf73 100644
+--- a/core/combo/arch/arm/armv7-a-neon.mk
++++ b/core/combo/arch/arm/armv7-a-neon.mk
+@@ -17,7 +17,7 @@ ARCH_ARM_HAVE_NEON              := true
+ # and a better solution should be found in the future.
+ #
+ arch_variant_cflags := \
+-    -march=armv7-a \
++    -mcpu=cortex-a9 \
+     -mfloat-abi=softfp \
+     -mfpu=neon
+ 
+diff --git a/envsetup.sh b/envsetup.sh
+index b57a272..577f80c 100644
+--- a/envsetup.sh
++++ b/envsetup.sh
+@@ -122,7 +122,7 @@ function setpaths()
+     case $ARCH in
+         x86) toolchaindir=x86/i686-linux-android-4.6/bin
+             ;;
+-        arm) toolchaindir=arm/arm-linux-androideabi-4.6/bin
++        arm) toolchaindir=arm/arm-linux-androideabi/bin
+             ;;
+         mips) toolchaindir=mips/mipsel-linux-android-4.6/bin
+             ;;

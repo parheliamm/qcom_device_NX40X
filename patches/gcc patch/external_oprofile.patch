@@ -1,0 +1,13 @@
+diff --git a/pp/Android.mk b/pp/Android.mk
+index b5d2e0a..288e320 100644
+--- a/pp/Android.mk
++++ b/pp/Android.mk
+@@ -31,7 +31,7 @@ common_libs := \
+ 	libiberty \
+ 	libintl
+ 
+-common_ldlibs := -lz $(common_host_ldlibs_libiconv)
++common_ldlibs := -lz -ldl $(common_host_ldlibs_libiconv)
+ 
+ ifeq ($(HAVE_LIBBFD),true)
+ 
