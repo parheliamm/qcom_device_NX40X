@@ -156,28 +156,28 @@ PRODUCT_COPY_FILES += \
     device/qcom/NX501/property/bootanimation.zip:system/media/bootanimation.zip \
 
 #kos
-PRODUCT_COPY_FILES += \
-	device/qcom/NX501/property/modules/control_trace.ko:system/lib/modules/control_trace.ko \
-	device/qcom/NX501/property/modules/gspca_main.ko:system/lib/modules/gspca_main.ko \
-	device/qcom/NX501/property/modules/mckernelapi.ko:system/lib/modules/mckernelapi.ko \
-	device/qcom/NX501/property/modules/mmc_test.ko:system/lib/modules/mmc_test.ko \
-	device/qcom/NX501/property/modules/eeprom_93cx6.ko:system/lib/modules/eeprom_93cx6.ko \
-	device/qcom/NX501/property/modules/reset_modem.ko:system/lib/modules/reset_modem.ko \
-	device/qcom/NX501/property/modules/lcd.ko:system/lib/modules/lcd.ko \
-	device/qcom/NX501/property/modules/qce40.ko:system/lib/modules/qce40.ko \
-	device/qcom/NX501/property/modules/qcedev.ko:system/lib/modules/qcedev.ko \
-	device/qcom/NX501/property/modules/msm-buspm-dev.ko:system/lib/modules/msm-buspm-dev.ko \
-	device/qcom/NX501/property/modules/test-iosched.ko:system/lib/modules/test-iosched.ko \
-	device/qcom/NX501/property/modules/adsprpc.ko:system/lib/modules/adsprpc.ko \
-	device/qcom/NX501/property/modules/ansi_cprng.ko:system/lib/modules/ansi_cprng.ko \
-	device/qcom/NX501/property/modules/radio-iris-transport.ko:system/lib/modules/radio-iris-transport.ko \
-	device/qcom/NX501/property/modules/ks8851.ko:system/lib/modules/ks8851.ko \
-	device/qcom/NX501/property/modules/spidev.ko:system/lib/modules/spidev.ko \
-	device/qcom/NX501/property/modules/qcrypto.ko:system/lib/modules/qcrypto.ko \
-	device/qcom/NX501/property/modules/scsi_wait_scan.ko:system/lib/modules/scsi_wait_scan.ko \
-	device/qcom/NX501/property/modules/dma_test.ko:system/lib/modules/dma_test.ko \
-	device/qcom/NX501/property/modules/evbug.ko:system/lib/modules/evbug.ko \
-	device/qcom/NX501/property/modules/mcdrvmodule.ko:system/lib/modules/mcdrvmodule.ko \
+#PRODUCT_COPY_FILES += \
+#	device/qcom/NX501/property/modules/control_trace.ko:system/lib/modules/control_trace.ko \
+#	device/qcom/NX501/property/modules/gspca_main.ko:system/lib/modules/gspca_main.ko \
+#	device/qcom/NX501/property/modules/mckernelapi.ko:system/lib/modules/mckernelapi.ko \
+#	device/qcom/NX501/property/modules/mmc_test.ko:system/lib/modules/mmc_test.ko \
+#	device/qcom/NX501/property/modules/eeprom_93cx6.ko:system/lib/modules/eeprom_93cx6.ko \
+#	device/qcom/NX501/property/modules/reset_modem.ko:system/lib/modules/reset_modem.ko \
+#	device/qcom/NX501/property/modules/lcd.ko:system/lib/modules/lcd.ko \
+#	device/qcom/NX501/property/modules/qce40.ko:system/lib/modules/qce40.ko \
+#	device/qcom/NX501/property/modules/qcedev.ko:system/lib/modules/qcedev.ko \
+#	device/qcom/NX501/property/modules/msm-buspm-dev.ko:system/lib/modules/msm-buspm-dev.ko \
+#	device/qcom/NX501/property/modules/test-iosched.ko:system/lib/modules/test-iosched.ko \
+#	device/qcom/NX501/property/modules/adsprpc.ko:system/lib/modules/adsprpc.ko \
+#	device/qcom/NX501/property/modules/ansi_cprng.ko:system/lib/modules/ansi_cprng.ko \
+#	device/qcom/NX501/property/modules/radio-iris-transport.ko:system/lib/modules/radio-iris-transport.ko \
+#	device/qcom/NX501/property/modules/ks8851.ko:system/lib/modules/ks8851.ko \
+#	device/qcom/NX501/property/modules/spidev.ko:system/lib/modules/spidev.ko \
+#	device/qcom/NX501/property/modules/qcrypto.ko:system/lib/modules/qcrypto.ko \
+#	device/qcom/NX501/property/modules/scsi_wait_scan.ko:system/lib/modules/scsi_wait_scan.ko \
+#	device/qcom/NX501/property/modules/dma_test.ko:system/lib/modules/dma_test.ko \
+#	device/qcom/NX501/property/modules/evbug.ko:system/lib/modules/evbug.ko \
+#	device/qcom/NX501/property/modules/mcdrvmodule.ko:system/lib/modules/mcdrvmodule.ko \
 
 #audio cal
 PRODUCT_COPY_FILES += \

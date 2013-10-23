@@ -51,7 +51,7 @@ BOARD_PERSISTIMAGE_FILE_SYSTEM_TYPE := ext4
 
 BOARD_KERNEL_CMDLINE := console=null androidboot.hardware=qcom user_debug=31 msm_rtb.filter=0x3F ehci-hcd.park=3 maxcpus=4
 BOARD_EGL_CFG := device/qcom/$(TARGET_PRODUCT)/egl.cfg
-TARGET_PREBUILT_KERNEL := device/qcom/NX501/kernel
+#TARGET_PREBUILT_KERNEL := device/qcom/NX501/kernel
 
 
 BOARD_BOOTIMAGE_PARTITION_SIZE := 15728640 # 15M
