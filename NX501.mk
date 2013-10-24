@@ -67,7 +67,7 @@ PRODUCT_COPY_FILES += \
     device/qcom/NX501/property/lib/libchromatix_ov5647_default_video.so:system/lib/libchromatix_ov5647_default_video.so \
     device/qcom/NX501/property/lib/libmmcamera_3a_legacy.so:system/lib/libmmcamera_3a_legacy.so \
     device/qcom/NX501/property/lib/libmmcamera_faceproc.so:system/lib/libmmcamera_faceproc.so \
-    device/qcom/NX501/property/lib/libmmcamera_frameproc.so:system/lib/libmmcamera_frameproc \
+    device/qcom/NX501/property/lib/libmmcamera_frameproc.so:system/lib/libmmcamera_frameproc.so \
     device/qcom/NX501/property/lib/libmmcamera_statsproc31.so:system/lib/libmmcamera_statsproc31.so \
     device/qcom/NX501/property/lib/libmmcamera_plugin.so:system/lib/libmmcamera_plugin.so \
     device/qcom/NX501/property/lib/libmmcamera_interface.so:system/lib/libmmcamera_interface.so \
