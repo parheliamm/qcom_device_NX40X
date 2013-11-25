@@ -1,0 +1,22 @@
+diff --git a/pppd/utils.c b/pppd/utils.c
+index 1ef4b3b..fd8b740 100644
+--- a/pppd/utils.c
++++ b/pppd/utils.c
+@@ -86,7 +86,7 @@ struct buffer_info {
+  * always leaves destination null-terminated (for len > 0).
+  */
+ size_t
+-strlcpy(dest, src, len)
++_strlcpy(dest, src, len)
+     char *dest;
+     const char *src;
+     size_t len;
+@@ -116,7 +116,7 @@ strlcat(dest, src, len)
+ {
+     size_t dlen = strlen(dest);
+ 
+-    return dlen + strlcpy(dest + dlen, src, (len > dlen? len - dlen: 0));
++    return dlen + _strlcpy(dest + dlen, src, (len > dlen? len - dlen: 0));
+ }
+ 
+ 

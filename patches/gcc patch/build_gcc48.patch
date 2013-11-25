@@ -1,0 +1,47 @@
+diff --git a/core/combo/TARGET_linux-arm.mk b/core/combo/TARGET_linux-arm.mk
+index 854037d..6eef800 100644
+--- a/core/combo/TARGET_linux-arm.mk
++++ b/core/combo/TARGET_linux-arm.mk
+@@ -43,7 +43,7 @@ include $(TARGET_ARCH_SPECIFIC_MAKEFILE)
+ 
+ # You can set TARGET_TOOLS_PREFIX to get gcc from somewhere else
+ ifeq ($(strip $(TARGET_TOOLS_PREFIX)),)
+-TARGET_TOOLCHAIN_ROOT := prebuilts/gcc/$(HOST_PREBUILT_TAG)/arm/arm-linux-androideabi-4.6
++TARGET_TOOLCHAIN_ROOT := prebuilts/gcc/$(HOST_PREBUILT_TAG)/arm/arm-linux-androideabi
+ TARGET_TOOLS_PREFIX := $(TARGET_TOOLCHAIN_ROOT)/bin/arm-linux-androideabi-
+ endif
+ 
+@@ -79,7 +79,7 @@ ifeq ($(ARCH_ARM_HAVE_THUMB_SUPPORT),true)
+ TARGET_thumb_CFLAGS :=  -mthumb \
+                         -Os \
+                         -fomit-frame-pointer \
+-                        -fno-strict-aliasing
++                        -fno-strict-aliasing 
+ else
+ TARGET_thumb_CFLAGS := $(TARGET_arm_CFLAGS)
+ endif
+@@ -118,9 +118,9 @@ TARGET_GLOBAL_CFLAGS += $(TARGET_ANDROID_CONFIG_CFLAGS)
+ # We cannot turn it off blindly since the option is not available
+ # in gcc-4.4.x.  We also want to disable sincos optimization globally
+ # by turning off the builtin sin function.
+-ifneq ($(filter 4.6 4.6.%, $(shell $(TARGET_CC) --version)),)
++ifneq ($(filter 4.8 4.8.%, $(shell $(TARGET_CC) --version)),)
+ TARGET_GLOBAL_CFLAGS += -Wno-unused-but-set-variable -fno-builtin-sin \
+-			-fno-strict-volatile-bitfields
++			-fno-strict-volatile-bitfields -Wno-unused-parameter -Wno-sizeof-pointer-memaccess
+ endif
+ 
+ # This is to avoid the dreaded warning compiler message:
+diff --git a/envsetup.sh b/envsetup.sh
+index b57a272..577f80c 100644
+--- a/envsetup.sh
++++ b/envsetup.sh
+@@ -122,7 +122,7 @@ function setpaths()
+     case $ARCH in
+         x86) toolchaindir=x86/i686-linux-android-4.6/bin
+             ;;
+-        arm) toolchaindir=arm/arm-linux-androideabi-4.6/bin
++        arm) toolchaindir=arm/arm-linux-androideabi/bin
+             ;;
+         mips) toolchaindir=mips/mipsel-linux-android-4.6/bin
+             ;;
