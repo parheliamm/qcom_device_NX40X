@@ -117,6 +117,7 @@ PRODUCT_PACKAGES += NoiseField
 PRODUCT_PACKAGES += PhaseBeam
 PRODUCT_PACKAGES += bluetoothd
 PRODUCT_PACKAGES += Superuser
+PRODUCT_PACKAGES += nubia
 
 #fstab.qcom
 PRODUCT_PACKAGES += fstab.qcom
