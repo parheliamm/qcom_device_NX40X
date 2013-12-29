@@ -3054,7 +3054,7 @@ SectionDevice
 		'IIR1 Enable Band4':1:1
 		'IIR1 Enable Band5':1:1
 		'RX1 MIX2 INP1':0:IIR1
-		'RX1 Digital Volume':1:68
+		'RX1 Digital Volume':1:72
 	EndSequence
 
 	DisableSequence
@@ -5365,6 +5365,7 @@ SectionModifier
 	# ALSA PCMs
 	PlaybackPCM 5
 	CapturePCM 6
+	PlaybackVolume "Internal FM RX Volume"
 
 EndSection
 

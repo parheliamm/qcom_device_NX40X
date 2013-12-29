@@ -74,9 +74,9 @@ PRODUCT_COPY_FILES += \
     device/qcom/NX501/property/lib/libmmcamera_interface2.so:system/lib/libmmcamera_interface2.so \
     device/qcom/NX501/property/bin/mm-qcamera-daemon:system/bin/mm-qcamera-daemon \
     device/qcom/NX501/property/bin/v4l2-qcamera-app:system/bin/v4l2-qcamera-app \
-    device/qcom/NX501/property/gcc47_netmgr/netmgrd:system/bin/netmgrd \
-    device/qcom/NX501/property/gcc47_netmgr/nl_listener:system/bin/nl_listener \
-    device/qcom/NX501/property/gcc47_netmgr/libnetmgr.so:system/lib/libnetmgr.so \
+#    device/qcom/NX501/property/gcc47_netmgr/netmgrd:system/bin/netmgrd \
+#    device/qcom/NX501/property/gcc47_netmgr/nl_listener:system/bin/nl_listener \
+#    device/qcom/NX501/property/gcc47_netmgr/libnetmgr.so:system/lib/libnetmgr.so \
 
 PRODUCT_COPY_FILES += \
     device/qcom/NX501/property/hosts:system/etc/hosts \
