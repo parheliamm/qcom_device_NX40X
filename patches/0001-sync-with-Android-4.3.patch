@@ -1,0 +1,3171 @@
+From 9332840b1e8297343cda6bcf806b8ef1f64454de Mon Sep 17 00:00:00 2001
+From: Chenxi Mao <chenxi.mao2013@gmail.com>
+Date: Thu, 19 Dec 2013 10:05:07 +0800
+Subject: [PATCH] sync with Android 4.3
+
+Change-Id: Id920a040dc5ebc6c8083dad6c8544a0ed9d179b7
+---
+ libc/Android.mk                                |   28 +-
+ libc/arch-arm/bionic/cortex-a15/__strcat_chk.S |  225 ++++++++++
+ libc/arch-arm/bionic/cortex-a15/__strcpy_chk.S |  187 ++++++++
+ libc/arch-arm/bionic/cortex-a15/memchr.S       |  151 +++++++
+ libc/arch-arm/bionic/cortex-a15/memcpy.S       |   92 ++++
+ libc/arch-arm/bionic/cortex-a15/memcpy_base.S  |  215 +++++++++
+ libc/arch-arm/bionic/cortex-a15/memset.S       |  119 +++++
+ libc/arch-arm/bionic/cortex-a15/strcat.S       |  568 ++++++++++++++++++++++++
+ libc/arch-arm/bionic/cortex-a15/strcmp.S       |  500 +++++++++++++++++++++
+ libc/arch-arm/bionic/cortex-a15/strcpy.S       |  451 +++++++++++++++++++
+ libc/arch-arm/bionic/cortex-a15/strlen.S       |  165 +++++++
+ libc/arch-arm/bionic/strlen.c                  |   20 +-
+ libc/bionic/logd_write.c                       |    7 +
+ libc/private/libc_events.h                     |   48 ++
+ libc/private/logd.h                            |    2 +
+ libm/Android.mk                                |   19 +-
+ libm/arm/e_pow.S                               |    2 +-
+ libm/arm/e_sqrt.S                              |   36 ++
+ libm/arm/e_sqrtf.S                             |   36 ++
+ linker/linker_format.c                         |    4 +-
+ 20 files changed, 2842 insertions(+), 33 deletions(-)
+ create mode 100644 libc/arch-arm/bionic/cortex-a15/__strcat_chk.S
+ create mode 100644 libc/arch-arm/bionic/cortex-a15/__strcpy_chk.S
+ create mode 100644 libc/arch-arm/bionic/cortex-a15/memchr.S
+ create mode 100644 libc/arch-arm/bionic/cortex-a15/memcpy.S
+ create mode 100644 libc/arch-arm/bionic/cortex-a15/memcpy_base.S
+ create mode 100644 libc/arch-arm/bionic/cortex-a15/memset.S
+ create mode 100644 libc/arch-arm/bionic/cortex-a15/strcat.S
+ create mode 100644 libc/arch-arm/bionic/cortex-a15/strcmp.S
+ create mode 100644 libc/arch-arm/bionic/cortex-a15/strcpy.S
+ create mode 100644 libc/arch-arm/bionic/cortex-a15/strlen.S
+ create mode 100644 libc/private/libc_events.h
+ create mode 100644 libm/arm/e_sqrt.S
+ create mode 100644 libm/arm/e_sqrtf.S
+
+diff --git a/libc/Android.mk b/libc/Android.mk
+index 8a11e24..1f51771 100644
+--- a/libc/Android.mk
++++ b/libc/Android.mk
+@@ -179,13 +179,11 @@ libc_common_src_files := \
+ 	stdlib/wchar.c \
+ 	string/index.c \
+ 	string/memccpy.c \
+-	string/memchr.c \
+ 	string/memmem.c \
+ 	string/memrchr.c \
+ 	string/memswap.c \
+ 	string/strcasecmp.c \
+ 	string/strcasestr.c \
+-	string/strcat.c \
+ 	string/strchr.c \
+ 	string/strcoll.c \
+ 	string/strcspn.c \
+@@ -203,11 +201,7 @@ libc_common_src_files := \
+ 	string/strstr.c \
+ 	string/strtok.c \
+ 	string/strtotimeval.c \
+-	string/__memcpy_chk.c \
+ 	string/__memmove_chk.c \
+-	string/__memset_chk.c \
+-	string/__strcat_chk.c \
+-	string/__strcpy_chk.c \
+ 	string/__strlcat_chk.c \
+ 	string/__strlcpy_chk.c \
+ 	string/__strlen_chk.c \
+@@ -379,17 +373,28 @@ libc_common_src_files += \
+ 	arch-arm/bionic/tgkill.S \
+ 	arch-arm/bionic/memcmp.S \
+ 	arch-arm/bionic/memcmp16.S \
+-	arch-arm/bionic/memcpy.S \
+-	arch-arm/bionic/memset.S \
+ 	arch-arm/bionic/setjmp.S \
+ 	arch-arm/bionic/sigsetjmp.S \
+-	arch-arm/bionic/strlen.c.arm \
+-	arch-arm/bionic/strcpy.S \
+-	arch-arm/bionic/strcmp.S \
+ 	arch-arm/bionic/syscall.S \
+ 	string/strncmp.c \
+ 	unistd/socketcalls.c
+ 
++# String routines optimized for ARMv7
++ifeq ($(ARCH_ARM_HAVE_ARMV7A),true)
++libc_common_src_files += arch-arm/bionic/cortex-a15/memchr.S
++libc_common_src_files += arch-arm/bionic/cortex-a15/strlen.S
++libc_common_src_files += arch-arm/bionic/cortex-a15/memcpy.S
++libc_common_src_files += arch-arm/bionic/cortex-a15/memset.S
++libc_common_src_files += arch-arm/bionic/cortex-a15/strcmp.S
++libc_common_src_files += arch-arm/bionic/cortex-a15/__strcat_chk.S
++libc_common_src_files += arch-arm/bionic/cortex-a15/__strcpy_chk.S
++libc_common_src_files += arch-arm/bionic/cortex-a15/strcat.S
++libc_common_src_files += arch-arm/bionic/cortex-a15/strcpy.S
++else
++libc_common_src_files += string/memchr.c
++libc_common_src_files += arch-arm/bionic/strlen.c.arm
++endif
++
+ # Check if we want a neonized version of memmove instead of the
+ # current ARM version
+ ifeq ($(TARGET_USE_SCORPION_BIONIC_OPTIMIZATION),true)
+@@ -494,7 +499,6 @@ libc_common_src_files += \
+ 	string/bcopy.c \
+ 	string/memcmp.c \
+ 	string/strcmp.c \
+-	string/strcpy.c \
+ 	string/strncmp.c
+ 
+ libc_common_src_files += \
+diff --git a/libc/arch-arm/bionic/cortex-a15/__strcat_chk.S b/libc/arch-arm/bionic/cortex-a15/__strcat_chk.S
+new file mode 100644
+index 0000000..956b461
+--- /dev/null
++++ b/libc/arch-arm/bionic/cortex-a15/__strcat_chk.S
+@@ -0,0 +1,225 @@
++/*
++ * Copyright (C) 2013 The Android Open Source Project
++ * All rights reserved.
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions
++ * are met:
++ *  * Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer.
++ *  * Redistributions in binary form must reproduce the above copyright
++ *    notice, this list of conditions and the following disclaimer in
++ *    the documentation and/or other materials provided with the
++ *    distribution.
++ *
++ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
++ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
++ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
++ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
++ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
++ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
++ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
++ * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
++ * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
++ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
++ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
++ * SUCH DAMAGE.
++ */
++
++#include <machine/asm.h>
++#include "libc_events.h"
++
++    .syntax unified
++
++    .thumb
++    .thumb_func
++
++// Get the length of src string, then get the source of the dst string.
++// Check that the two lengths together don't exceed the threshold, then
++// do a memcpy of the data.
++ENTRY(__strcat_chk)
++    .cfi_startproc
++    pld     [r0, #0]
++    push    {r0, lr}
++    .save   {r0, lr}
++    .cfi_def_cfa_offset 8
++    .cfi_rel_offset r0, 0
++    .cfi_rel_offset lr, 4
++    push    {r4, r5}
++    .save   {r4, r5}
++    .cfi_adjust_cfa_offset 8
++    .cfi_rel_offset r4, 0
++    .cfi_rel_offset r5, 4
++
++    mov     lr, r2
++
++    // Save the dst register to r5
++    mov     r5, r0
++
++    // Zero out r4
++    eor     r4, r4, r4
++
++    // r1 contains the address of the string to count.
++.L_strlen_start:
++    mov     r0, r1
++    ands    r3, r1, #7
++    beq     .L_mainloop
++
++    // Align to a double word (64 bits).
++    rsb     r3, r3, #8
++    lsls    ip, r3, #31
++    beq     .L_align_to_32
++
++    ldrb    r2, [r1], #1
++    cbz     r2, .L_update_count_and_finish
++
++.L_align_to_32:
++    bcc     .L_align_to_64
++    ands    ip, r3, #2
++    beq     .L_align_to_64
++
++    ldrb    r2, [r1], #1
++    cbz     r2, .L_update_count_and_finish
++    ldrb    r2, [r1], #1
++    cbz     r2, .L_update_count_and_finish
++
++.L_align_to_64:
++    tst     r3, #4
++    beq     .L_mainloop
++    ldr     r3, [r1], #4
++
++    sub     ip, r3, #0x01010101
++    bic     ip, ip, r3
++    ands    ip, ip, #0x80808080
++    bne     .L_zero_in_second_register
++
++    .p2align 2
++.L_mainloop:
++    ldrd    r2, r3, [r1], #8
++
++    pld     [r1, #64]
++
++    sub     ip, r2, #0x01010101
++    bic     ip, ip, r2
++    ands    ip, ip, #0x80808080
++    bne     .L_zero_in_first_register
++
++    sub     ip, r3, #0x01010101
++    bic     ip, ip, r3
++    ands    ip, ip, #0x80808080
++    bne     .L_zero_in_second_register
++    b       .L_mainloop
++
++.L_update_count_and_finish:
++    sub     r3, r1, r0
++    sub     r3, r3, #1
++    b       .L_finish
++
++.L_zero_in_first_register:
++    sub     r3, r1, r0
++    lsls    r2, ip, #17
++    bne     .L_sub8_and_finish
++    bcs     .L_sub7_and_finish
++    lsls    ip, ip, #1
++    bne     .L_sub6_and_finish
++
++    sub     r3, r3, #5
++    b       .L_finish
++
++.L_sub8_and_finish:
++    sub     r3, r3, #8
++    b       .L_finish
++
++.L_sub7_and_finish:
++    sub     r3, r3, #7
++    b       .L_finish
++
++.L_sub6_and_finish:
++    sub     r3, r3, #6
++    b       .L_finish
++
++.L_zero_in_second_register:
++    sub     r3, r1, r0
++    lsls    r2, ip, #17
++    bne     .L_sub4_and_finish
++    bcs     .L_sub3_and_finish
++    lsls    ip, ip, #1
++    bne     .L_sub2_and_finish
++
++    sub     r3, r3, #1
++    b       .L_finish
++
++.L_sub4_and_finish:
++    sub     r3, r3, #4
++    b       .L_finish
++
++.L_sub3_and_finish:
++    sub     r3, r3, #3
++    b       .L_finish
++
++.L_sub2_and_finish:
++    sub     r3, r3, #2
++
++.L_finish:
++    cmp     r4, #0
++    bne     .L_strlen_done
++
++    // Time to get the dst string length.
++    mov     r1, r5
++
++    // Save the original source address to r5.
++    mov     r5, r0
++
++    // Save the current length (adding 1 for the terminator).
++    add     r4, r3, #1
++    b       .L_strlen_start
++
++    // r0 holds the pointer to the dst string.
++    // r3 holds the dst string length.
++    // r4 holds the src string length + 1.
++.L_strlen_done:
++    add     r2, r3, r4
++    cmp     r2, lr
++    bhi     __strcat_chk_failed
++
++    // Set up the registers for the memcpy code.
++    mov     r1, r5
++    pld     [r1, #64]
++    mov     r2, r4
++    add     r0, r0, r3
++    pop     {r4, r5}
++
++    .cfi_endproc
++END(__strcat_chk)
++
++#define MEMCPY_BASE         __strcat_chk_memcpy_base
++#define MEMCPY_BASE_ALIGNED __strcat_chk_memcpy_base_aligned
++#include "memcpy_base.S"
++
++ENTRY(__strcat_chk_failed)
++    .cfi_startproc
++    .save   {r0, lr}
++    .save   {r4, r5}
++    .cfi_def_cfa_offset 8
++    .cfi_rel_offset r0, 0
++    .cfi_rel_offset lr, 4
++    .cfi_adjust_cfa_offset 8
++    .cfi_rel_offset r4, 0
++    .cfi_rel_offset r5, 4
++
++    ldr     r0, error_message
++    ldr     r1, error_code
++1:
++    add     r0, pc
++    bl      __fortify_chk_fail
++error_code:
++    .word   BIONIC_EVENT_STRCAT_BUFFER_OVERFLOW
++error_message:
++    .word   error_string-(1b+4)
++
++    .cfi_endproc
++END(__strcat_chk_failed)
++
++    .data
++error_string:
++    .string "strcat buffer overflow"
+diff --git a/libc/arch-arm/bionic/cortex-a15/__strcpy_chk.S b/libc/arch-arm/bionic/cortex-a15/__strcpy_chk.S
+new file mode 100644
+index 0000000..402cac6
+--- /dev/null
++++ b/libc/arch-arm/bionic/cortex-a15/__strcpy_chk.S
+@@ -0,0 +1,187 @@
++/*
++ * Copyright (C) 2013 The Android Open Source Project
++ * All rights reserved.
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions
++ * are met:
++ *  * Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer.
++ *  * Redistributions in binary form must reproduce the above copyright
++ *    notice, this list of conditions and the following disclaimer in
++ *    the documentation and/or other materials provided with the
++ *    distribution.
++ *
++ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
++ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
++ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
++ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
++ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
++ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
++ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
++ * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
++ * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
++ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
++ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
++ * SUCH DAMAGE.
++ */
++
++#include <machine/asm.h>
++#include "libc_events.h"
++
++    .syntax unified
++
++    .thumb
++    .thumb_func
++
++// Get the length of the source string first, then do a memcpy of the data
++// instead of a strcpy.
++ENTRY(__strcpy_chk)
++    .cfi_startproc
++    pld     [r0, #0]
++    push    {r0, lr}
++    .save   {r0, lr}
++    .cfi_def_cfa_offset 8
++    .cfi_rel_offset r0, 0
++    .cfi_rel_offset lr, 4
++
++    mov     lr, r2
++    mov     r0, r1
++
++    ands    r3, r1, #7
++    beq     .L_mainloop
++
++    // Align to a double word (64 bits).
++    rsb     r3, r3, #8
++    lsls    ip, r3, #31
++    beq     .L_align_to_32
++
++    ldrb    r2, [r0], #1
++    cbz     r2, .L_update_count_and_finish
++
++.L_align_to_32:
++    bcc     .L_align_to_64
++    ands    ip, r3, #2
++    beq     .L_align_to_64
++
++    ldrb    r2, [r0], #1
++    cbz     r2, .L_update_count_and_finish
++    ldrb    r2, [r0], #1
++    cbz     r2, .L_update_count_and_finish
++
++.L_align_to_64:
++    tst     r3, #4
++    beq     .L_mainloop
++    ldr     r3, [r0], #4
++
++    sub     ip, r3, #0x01010101
++    bic     ip, ip, r3
++    ands    ip, ip, #0x80808080
++    bne     .L_zero_in_second_register
++
++    .p2align 2
++.L_mainloop:
++    ldrd    r2, r3, [r0], #8
++
++    pld     [r0, #64]
++
++    sub     ip, r2, #0x01010101
++    bic     ip, ip, r2
++    ands    ip, ip, #0x80808080
++    bne     .L_zero_in_first_register
++
++    sub     ip, r3, #0x01010101
++    bic     ip, ip, r3
++    ands    ip, ip, #0x80808080
++    bne     .L_zero_in_second_register
++    b       .L_mainloop
++
++.L_update_count_and_finish:
++    sub     r3, r0, r1
++    sub     r3, r3, #1
++    b       .L_check_size
++
++.L_zero_in_first_register:
++    sub     r3, r0, r1
++    lsls    r2, ip, #17
++    bne     .L_sub8_and_finish
++    bcs     .L_sub7_and_finish
++    lsls    ip, ip, #1
++    bne     .L_sub6_and_finish
++
++    sub     r3, r3, #5
++    b       .L_check_size
++
++.L_sub8_and_finish:
++    sub     r3, r3, #8
++    b       .L_check_size
++
++.L_sub7_and_finish:
++    sub     r3, r3, #7
++    b       .L_check_size
++
++.L_sub6_and_finish:
++    sub     r3, r3, #6
++    b       .L_check_size
++
++.L_zero_in_second_register:
++    sub     r3, r0, r1
++    lsls    r2, ip, #17
++    bne     .L_sub4_and_finish
++    bcs     .L_sub3_and_finish
++    lsls    ip, ip, #1
++    bne     .L_sub2_and_finish
++
++    sub     r3, r3, #1
++    b       .L_check_size
++
++.L_sub4_and_finish:
++    sub     r3, r3, #4
++    b       .L_check_size
++
++.L_sub3_and_finish:
++    sub     r3, r3, #3
++    b       .L_check_size
++
++.L_sub2_and_finish:
++    sub     r3, r3, #2
++
++.L_check_size:
++    pld     [r1, #0]
++    pld     [r1, #64]
++    ldr     r0, [sp]
++    cmp     r3, lr
++    bhs     __strcpy_chk_failed
++
++    // Add 1 for copy length to get the string terminator.
++    add     r2, r3, #1
++
++    .cfi_endproc
++END(__strcpy_chk)
++
++#define MEMCPY_BASE         __strcpy_chk_memcpy_base
++#define MEMCPY_BASE_ALIGNED __strcpy_chk_memcpy_base_aligned
++#include "memcpy_base.S"
++
++ENTRY(__strcpy_chk_failed)
++    .cfi_startproc
++    .save   {r0, lr}
++    .cfi_def_cfa_offset 8
++    .cfi_rel_offset r0, 0
++    .cfi_rel_offset lr, 4
++
++    ldr     r0, error_message
++    ldr     r1, error_code
++1:
++    add     r0, pc
++    bl      __fortify_chk_fail
++error_code:
++    .word   BIONIC_EVENT_STRCPY_BUFFER_OVERFLOW
++error_message:
++    .word   error_string-(1b+4)
++    .cfi_endproc
++END(__strcpy_chk_failed)
++
++    .data
++error_string:
++    .string "strcpy buffer overflow"
+diff --git a/libc/arch-arm/bionic/cortex-a15/memchr.S b/libc/arch-arm/bionic/cortex-a15/memchr.S
+new file mode 100644
+index 0000000..de8a57c
+--- /dev/null
++++ b/libc/arch-arm/bionic/cortex-a15/memchr.S
+@@ -0,0 +1,151 @@
++/* Copyright (c) 2010-2011, Linaro Limited
++   All rights reserved.
++
++   Redistribution and use in source and binary forms, with or without
++   modification, are permitted provided that the following conditions
++   are met:
++
++      * Redistributions of source code must retain the above copyright
++      notice, this list of conditions and the following disclaimer.
++
++      * Redistributions in binary form must reproduce the above copyright
++      notice, this list of conditions and the following disclaimer in the
++      documentation and/or other materials provided with the distribution.
++
++      * Neither the name of Linaro Limited nor the names of its
++      contributors may be used to endorse or promote products derived
++      from this software without specific prior written permission.
++
++   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
++   "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
++   LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
++   A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
++   HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
++   SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
++   LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
++   DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
++   THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
++   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
++   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++
++   Written by Dave Gilbert <david.gilbert@linaro.org>
++
++   This memchr routine is optimised on a Cortex-A9 and should work on
++   all ARMv7 processors.   It has a fast past for short sizes, and has
++   an optimised path for large data sets; the worst case is finding the
++   match early in a large data set. */
++
++@ 2011-02-07 david.gilbert@linaro.org
++@    Extracted from local git a5b438d861
++@ 2011-07-14 david.gilbert@linaro.org
++@    Import endianness fix from local git ea786f1b
++@ 2011-12-07 david.gilbert@linaro.org
++@    Removed unneeded cbz from align loop
++
++	.syntax unified
++	.arch armv7-a
++
++@ this lets us check a flag in a 00/ff byte easily in either endianness
++#ifdef __ARMEB__
++#define CHARTSTMASK(c) 1<<(31-(c*8))
++#else
++#define CHARTSTMASK(c) 1<<(c*8)
++#endif
++	.text
++	.thumb
++
++@ ---------------------------------------------------------------------------
++	.thumb_func
++	.align 2
++	.p2align 4,,15
++	.global memchr
++	.type memchr,%function
++memchr:
++	@ r0 = start of memory to scan
++	@ r1 = character to look for
++	@ r2 = length
++	@ returns r0 = pointer to character or NULL if not found
++	and	r1,r1,#0xff	@ Don't think we can trust the caller to actually pass a char
++
++	cmp	r2,#16		@ If it's short don't bother with anything clever
++	blt	20f
++
++	tst	r0, #7		@ If it's already aligned skip the next bit
++	beq	10f
++
++	@ Work up to an aligned point
++5:
++	ldrb	r3, [r0],#1
++	subs	r2, r2, #1
++	cmp	r3, r1
++	beq	50f		@ If it matches exit found
++	tst	r0, #7
++	bne	5b		@ If not aligned yet then do next byte
++
++10:
++	@ At this point, we are aligned, we know we have at least 8 bytes to work with
++	push	{r4,r5,r6,r7}
++	orr	r1, r1, r1, lsl #8	@ expand the match word across to all bytes
++	orr	r1, r1, r1, lsl #16
++	bic	r4, r2, #7	@ Number of double words to work with
++	mvns	r7, #0		@ all F's
++	movs	r3, #0
++
++15:
++	ldmia	r0!,{r5,r6}
++	subs	r4, r4, #8
++	eor	r5,r5, r1	@ Get it so that r5,r6 have 00's where the bytes match the target
++	eor	r6,r6, r1
++	uadd8	r5, r5, r7	@ Parallel add 0xff - sets the GE bits for anything that wasn't 0
++	sel	r5, r3, r7	@ bytes are 00 for none-00 bytes, or ff for 00 bytes - NOTE INVERSION
++	uadd8	r6, r6, r7	@ Parallel add 0xff - sets the GE bits for anything that wasn't 0
++	sel	r6, r5, r7	@ chained....bytes are 00 for none-00 bytes, or ff for 00 bytes - NOTE INVERSION
++	cbnz	r6, 60f
++	bne	15b		@ (Flags from the subs above) If not run out of bytes then go around again
++
++	pop	{r4,r5,r6,r7}
++	and	r1,r1,#0xff	@ Get r1 back to a single character from the expansion above
++	and	r2,r2,#7	@ Leave the count remaining as the number after the double words have been done
++
++20:
++	cbz	r2, 40f		@ 0 length or hit the end already then not found
++
++21:  @ Post aligned section, or just a short call
++	ldrb	r3,[r0],#1
++	subs	r2,r2,#1
++	eor	r3,r3,r1	@ r3 = 0 if match - doesn't break flags from sub
++	cbz	r3, 50f
++	bne	21b		@ on r2 flags
++
++40:
++	movs	r0,#0		@ not found
++	bx	lr
++
++50:
++	subs	r0,r0,#1	@ found
++	bx	lr
++
++60:  @ We're here because the fast path found a hit - now we have to track down exactly which word it was
++	@ r0 points to the start of the double word after the one that was tested
++	@ r5 has the 00/ff pattern for the first word, r6 has the chained value
++	cmp	r5, #0
++	itte	eq
++	moveq	r5, r6		@ the end is in the 2nd word
++	subeq	r0,r0,#3	@ Points to 2nd byte of 2nd word
++	subne	r0,r0,#7	@ or 2nd byte of 1st word
++
++	@ r0 currently points to the 3rd byte of the word containing the hit
++	tst	r5, # CHARTSTMASK(0)	@ 1st character
++	bne	61f
++	adds	r0,r0,#1
++	tst	r5, # CHARTSTMASK(1)	@ 2nd character
++	ittt	eq
++	addeq	r0,r0,#1
++	tsteq	r5, # (3<<15)		@ 2nd & 3rd character
++	@ If not the 3rd must be the last one
++	addeq	r0,r0,#1
++
++61:
++	pop	{r4,r5,r6,r7}
++	subs	r0,r0,#1
++	bx	lr
+diff --git a/libc/arch-arm/bionic/cortex-a15/memcpy.S b/libc/arch-arm/bionic/cortex-a15/memcpy.S
+new file mode 100644
+index 0000000..c69d890
+--- /dev/null
++++ b/libc/arch-arm/bionic/cortex-a15/memcpy.S
+@@ -0,0 +1,92 @@
++/*
++ * Copyright (C) 2013 The Android Open Source Project
++ * All rights reserved.
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions
++ * are met:
++ *  * Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer.
++ *  * Redistributions in binary form must reproduce the above copyright
++ *    notice, this list of conditions and the following disclaimer in
++ *    the documentation and/or other materials provided with the
++ *    distribution.
++ *
++ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
++ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
++ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
++ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
++ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
++ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
++ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
++ * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
++ * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
++ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
++ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
++ * SUCH DAMAGE.
++ */
++
++/* Assumes neon instructions and a cache line size of 32 bytes. */
++
++#include <machine/asm.h>
++#include "libc_events.h"
++
++/*
++ * This code assumes it is running on a processor that supports all arm v7
++ * instructions, that supports neon instructions, and that has a 32 byte
++ * cache line.
++ */
++
++        .text
++        .syntax unified
++        .fpu    neon
++        .thumb
++        .thumb_func
++
++ENTRY(__memcpy_chk)
++        .cfi_startproc
++        cmp         r2, r3
++        bhi         __memcpy_chk_fail
++
++        // Fall through to memcpy...
++        .cfi_endproc
++END(__memcpy_chk)
++
++ENTRY(memcpy)
++        .cfi_startproc
++        pld     [r1, #64]
++        stmfd   sp!, {r0, lr}
++        .save   {r0, lr}
++        .cfi_def_cfa_offset 8
++        .cfi_rel_offset r0, 0
++        .cfi_rel_offset lr, 4
++        .cfi_endproc
++END(memcpy)
++
++#define MEMCPY_BASE         __memcpy_base
++#define MEMCPY_BASE_ALIGNED __memcpy_base_aligned
++#include "memcpy_base.S"
++
++ENTRY(__memcpy_chk_fail)
++        .cfi_startproc
++        // Preserve lr for backtrace.
++        push    {lr}
++        .save   {lr}
++        .cfi_def_cfa_offset 4
++        .cfi_rel_offset lr, 0
++
++        ldr     r0, error_message
++        ldr     r1, error_code
++1:
++        add     r0, pc
++        bl      __fortify_chk_fail
++error_code:
++        .word   BIONIC_EVENT_MEMCPY_BUFFER_OVERFLOW
++error_message:
++        .word   error_string-(1b+4)
++        .cfi_endproc
++END(__memcpy_chk_fail)
++
++        .data
++error_string:
++        .string     "memcpy buffer overflow"
+diff --git a/libc/arch-arm/bionic/cortex-a15/memcpy_base.S b/libc/arch-arm/bionic/cortex-a15/memcpy_base.S
+new file mode 100644
+index 0000000..e80e738
+--- /dev/null
++++ b/libc/arch-arm/bionic/cortex-a15/memcpy_base.S
+@@ -0,0 +1,215 @@
++/***************************************************************************
++ Copyright (c) 2009-2013 The Linux Foundation. All rights reserved.
++
++ Redistribution and use in source and binary forms, with or without
++ modification, are permitted provided that the following conditions are met:
++     * Redistributions of source code must retain the above copyright
++       notice, this list of conditions and the following disclaimer.
++     * Redistributions in binary form must reproduce the above copyright
++       notice, this list of conditions and the following disclaimer in the
++       documentation and/or other materials provided with the distribution.
++     * Neither the name of The Linux Foundation nor the names of its contributors may
++       be used to endorse or promote products derived from this software
++       without specific prior written permission.
++
++ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
++ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
++ ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
++ LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
++ CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
++ SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
++ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
++ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
++ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
++ POSSIBILITY OF SUCH DAMAGE.
++  ***************************************************************************/
++
++/* Assumes neon instructions and a cache line size of 64 bytes. */
++
++#include <machine/cpu-features.h>
++#include <machine/asm.h>
++
++/*
++ * These default settings are good for all Krait-based systems
++ * as of this writing, but they can be overridden in:
++ *   device/<vendor>/<board>/BoardConfig.mk
++ * by setting the following:
++ *   TARGET_USE_KRAIT_BIONIC_OPTIMIZATION := true
++ *   TARGET_USE_KRAIT_PLD_SET := true
++ *   TARGET_KRAIT_BIONIC_PLDOFFS := <pldoffset>
++ *   TARGET_KRAIT_BIONIC_PLDSIZE := <pldsize>
++ *   TARGET_KRAIT_BIONIC_PLDTHRESH := <pldthreshold>
++ *   TARGET_KRAIT_BIONIC_BBTHRESH := <bbthreshold>
++ */
++
++#ifndef PLDOFFS
++#define PLDOFFS	(10)
++#endif
++#ifndef PLDTHRESH
++#define PLDTHRESH (PLDOFFS)
++#endif
++#ifndef BBTHRESH
++#define BBTHRESH (4096/64)
++#endif
++#if (PLDOFFS < 1)
++#error Routine does not support offsets less than 1
++#endif
++#if (PLDTHRESH < PLDOFFS)
++#error PLD threshold must be greater than or equal to the PLD offset
++#endif
++#ifndef PLDSIZE
++#define PLDSIZE	(64)
++#endif
++	.text
++	.fpu    neon
++
++ENTRY(MEMCPY_BASE)
++MEMCPY_BASE_ALIGNED:
++        .cfi_startproc
++	.save {r0, r9, r10, lr}
++        .cfi_def_cfa_offset 8
++	.cfi_rel_offset r0, 0
++	.cfi_rel_offset lr, 4
++	cmp	r2, #4
++	blt	.Lneon_lt4
++	cmp	r2, #16
++	blt	.Lneon_lt16
++	cmp	r2, #32
++	blt	.Lneon_16
++	cmp	r2, #64
++	blt	.Lneon_copy_32_a
++
++	mov	r12, r2, lsr #6
++	cmp	r12, #PLDTHRESH
++	ble	.Lneon_copy_64_loop_nopld
++
++	push	{r9, r10}
++	.cfi_adjust_cfa_offset 8
++	.cfi_rel_offset r9, 0
++	.cfi_rel_offset r10, 4
++
++	cmp	r12, #BBTHRESH
++	ble	.Lneon_prime_pump
++
++	add	lr, r0, #0x400
++	add	r9, r1, #(PLDOFFS*PLDSIZE)
++	sub	lr, lr, r9
++	lsl	lr, lr, #21
++	lsr	lr, lr, #21
++	add	lr, lr, #(PLDOFFS*PLDSIZE)
++	cmp	r12, lr, lsr #6
++	ble	.Lneon_prime_pump
++
++	itt	gt
++	movgt	r9, #(PLDOFFS)
++	rsbsgt	r9, r9, lr, lsr #6
++	ble	.Lneon_prime_pump
++
++	add	r10, r1, lr
++	bic	r10, #0x3F
++
++	sub	r12, r12, lr, lsr #6
++
++	cmp	r9, r12
++	itee	le
++	suble	r12, r12, r9
++	movgt	r9, r12
++	movgt	r12, #0
++
++	pld	[r1, #((PLDOFFS-1)*PLDSIZE)]
++.Lneon_copy_64_loop_outer_doublepld:
++	pld	[r1, #((PLDOFFS)*PLDSIZE)]
++	vld1.32	{q0, q1}, [r1]!
++	vld1.32	{q2, q3}, [r1]!
++	ldr	r3, [r10]
++	subs	r9, r9, #1
++	vst1.32	{q0, q1}, [r0]!
++	vst1.32	{q2, q3}, [r0]!
++	add	r10, #64
++	bne	.Lneon_copy_64_loop_outer_doublepld
++	cmp	r12, #0
++	beq	.Lneon_pop_before_nopld
++
++	cmp	r12, #(512*1024/64)
++	blt	.Lneon_copy_64_loop_outer
++
++.Lneon_copy_64_loop_ddr:
++	vld1.32	{q0, q1}, [r1]!
++	vld1.32	{q2, q3}, [r1]!
++	pld	[r10]
++	subs	r12, r12, #1
++	vst1.32	{q0, q1}, [r0]!
++	vst1.32	{q2, q3}, [r0]!
++	add	r10, #64
++	bne	.Lneon_copy_64_loop_ddr
++	b	.Lneon_pop_before_nopld
++
++.Lneon_prime_pump:
++	mov	lr, #(PLDOFFS*PLDSIZE)
++	add	r10, r1, #(PLDOFFS*PLDSIZE)
++	bic	r10, #0x3F
++	sub	r12, r12, #PLDOFFS
++	ldr	r3, [r10, #(-1*PLDSIZE)]
++.Lneon_copy_64_loop_outer:
++	vld1.32	{q0, q1}, [r1]!
++	vld1.32	{q2, q3}, [r1]!
++	ldr	r3, [r10]
++	subs	r12, r12, #1
++	vst1.32	{q0, q1}, [r0]!
++	vst1.32	{q2, q3}, [r0]!
++	add	r10, #64
++	bne	.Lneon_copy_64_loop_outer
++.Lneon_pop_before_nopld:
++	mov	r12, lr, lsr #6
++	pop	{r9, r10}
++	.cfi_restore r9
++	.cfi_restore r10
++	.cfi_adjust_cfa_offset -8
++
++.Lneon_copy_64_loop_nopld:
++	vld1.32	{q8, q9}, [r1]!
++	vld1.32	{q10, q11}, [r1]!
++	subs	r12, r12, #1
++	vst1.32	{q8, q9}, [r0]!
++	vst1.32	{q10, q11}, [r0]!
++	bne	.Lneon_copy_64_loop_nopld
++	ands	r2, r2, #0x3f
++	.cfi_restore r0
++	.cfi_adjust_cfa_offset -4
++	beq	.Lneon_exit
++.Lneon_copy_32_a:
++	movs	r3, r2, lsl #27
++	bcc	.Lneon_16
++	vld1.32	{q0,q1}, [r1]!
++	vst1.32	{q0,q1}, [r0]!
++.Lneon_16:
++	bpl	.Lneon_lt16
++	vld1.32	{q8}, [r1]!
++	vst1.32	{q8}, [r0]!
++	ands	r2, r2, #0x0f
++	beq	.Lneon_exit
++.Lneon_lt16:
++	movs	r3, r2, lsl #29
++	itttt	cs
++	ldrcs	r3, [r1], #4
++	strcs	r3, [r0], #4
++	ldrcs	r3, [r1], #4
++	strcs	r3, [r0], #4
++	itt	mi
++	ldrmi	r3, [r1], #4
++	strmi	r3, [r0], #4
++.Lneon_lt4:
++	movs	r2, r2, lsl #31
++	itt	cs
++	ldrhcs	r3, [r1], #2
++	strhcs	r3, [r0], #2
++	itt	mi
++	ldrbmi	r3, [r1]
++	strbmi	r3, [r0]
++.Lneon_exit:
++	pop	{r0, lr}
++	bx	lr
++        .cfi_endproc
++END(MEMCPY_BASE)
++
+diff --git a/libc/arch-arm/bionic/cortex-a15/memset.S b/libc/arch-arm/bionic/cortex-a15/memset.S
+new file mode 100644
+index 0000000..005dfd8
+--- /dev/null
++++ b/libc/arch-arm/bionic/cortex-a15/memset.S
+@@ -0,0 +1,119 @@
++/*
++ * Copyright (C) 2008 The Android Open Source Project
++ * All rights reserved.
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions
++ * are met:
++ *  * Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer.
++ *  * Redistributions in binary form must reproduce the above copyright
++ *    notice, this list of conditions and the following disclaimer in
++ *    the documentation and/or other materials provided with the
++ *    distribution.
++ *
++ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
++ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
++ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
++ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
++ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
++ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
++ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
++ * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
++ * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
++ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
++ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
++ * SUCH DAMAGE.
++ */
++
++#include <machine/cpu-features.h>
++#include <machine/asm.h>
++#include "libc_events.h"
++
++/*
++ * This code assumes it is running on a processor that supports all arm v7
++ * instructions, that supports neon instructions, and that supports
++ * unaligned neon instruction accesses to memory.
++ */
++
++    .fpu    neon
++
++ENTRY(__memset_chk)
++        .cfi_startproc
++        cmp         r2, r3
++        bls         .L_done
++
++        // Preserve lr for backtrace.
++        .save       {lr}
++        push        {lr}
++        .cfi_def_cfa_offset 4
++        .cfi_rel_offset lr, 0
++
++        ldr         r0, error_message
++        ldr         r1, error_code
++1:
++        add         r0, pc
++        bl          __fortify_chk_fail
++error_code:
++        .word       BIONIC_EVENT_MEMSET_BUFFER_OVERFLOW
++error_message:
++        .word       error_string-(1b+8)
++
++        .cfi_endproc
++END(__memset_chk)
++
++ENTRY(bzero)
++        .cfi_startproc
++        mov     r2, r1
++        mov     r1, #0
++
++.L_done:
++        // Fall through to memset...
++        .cfi_endproc
++END(bzero)
++
++/* memset() returns its first argument.  */
++ENTRY(memset)
++        .cfi_startproc
++        .save       {r0}
++        stmfd       sp!, {r0}
++        .cfi_def_cfa_offset 4
++        .cfi_rel_offset r0, 0
++
++        vdup.8      q0, r1
++
++        /* make sure we have at least 32 bytes to write */
++        subs        r2, r2, #32
++        blo         2f
++        vmov        q1, q0
++
++1:      /* The main loop writes 32 bytes at a time */
++        subs        r2, r2, #32
++        vst1.8      {d0 - d3}, [r0]!
++        bhs         1b
++
++2:      /* less than 32 left */
++        add         r2, r2, #32
++        tst         r2, #0x10
++        beq         3f
++
++        // writes 16 bytes, 128-bits aligned
++        vst1.8      {d0, d1}, [r0]!
++3:      /* write up to 15-bytes (count in r2) */
++        movs        ip, r2, lsl #29
++        bcc         1f
++        vst1.8      {d0}, [r0]!
++1:      bge         2f
++        vst1.32     {d0[0]}, [r0]!
++2:      movs        ip, r2, lsl #31
++        strmib      r1, [r0], #1
++        strcsb      r1, [r0], #1
++        strcsb      r1, [r0], #1
++        ldmfd       sp!, {r0}
++        bx          lr
++        .cfi_endproc
++END(memset)
++
++        .data
++error_string:
++        .string     "memset buffer overflow"
+diff --git a/libc/arch-arm/bionic/cortex-a15/strcat.S b/libc/arch-arm/bionic/cortex-a15/strcat.S
+new file mode 100644
+index 0000000..72d4e9e
+--- /dev/null
++++ b/libc/arch-arm/bionic/cortex-a15/strcat.S
+@@ -0,0 +1,568 @@
++/*
++ * Copyright (C) 2013 The Android Open Source Project
++ * All rights reserved.
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions
++ * are met:
++ *  * Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer.
++ *  * Redistributions in binary form must reproduce the above copyright
++ *    notice, this list of conditions and the following disclaimer in
++ *    the documentation and/or other materials provided with the
++ *    distribution.
++ *
++ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
++ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
++ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
++ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
++ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
++ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
++ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
++ * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
++ * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
++ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
++ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
++ * SUCH DAMAGE.
++ */
++/*
++ * Copyright (c) 2013 ARM Ltd
++ * All rights reserved.
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions
++ * are met:
++ * 1. Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer.
++ * 2. Redistributions in binary form must reproduce the above copyright
++ *    notice, this list of conditions and the following disclaimer in the
++ *    documentation and/or other materials provided with the distribution.
++ * 3. The name of the company may not be used to endorse or promote
++ *    products derived from this software without specific prior written
++ *    permission.
++ *
++ * THIS SOFTWARE IS PROVIDED BY ARM LTD ``AS IS'' AND ANY EXPRESS OR IMPLIED
++ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
++ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
++ * IN NO EVENT SHALL ARM LTD BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
++ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
++ * TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
++ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
++ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
++ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
++ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++ */
++
++#include <machine/asm.h>
++
++    .syntax unified
++
++    .thumb
++    .thumb_func
++
++    .macro m_push
++    push    {r0, r4, r5, lr}
++    .endm // m_push
++
++    .macro m_pop
++    pop     {r0, r4, r5, pc}
++    .endm // m_pop
++
++    .macro m_scan_byte
++    ldrb    r3, [r0]
++    cbz     r3, strcat_r0_scan_done
++    add     r0, #1
++    .endm // m_scan_byte
++
++    .macro m_copy_byte reg, cmd, label
++    ldrb    \reg, [r1], #1
++    strb    \reg, [r0], #1
++    \cmd    \reg, \label
++    .endm // m_copy_byte
++
++ENTRY(strcat)
++    // Quick check to see if src is empty.
++    ldrb    r2, [r1]
++    pld     [r1, #0]
++    cbnz    r2, strcat_continue
++    bx      lr
++
++strcat_continue:
++    // To speed up really small dst strings, unroll checking the first 4 bytes.
++    m_push
++    m_scan_byte
++    m_scan_byte
++    m_scan_byte
++    m_scan_byte
++
++    ands    r3, r0, #7
++    beq     strcat_mainloop
++
++    // Align to a double word (64 bits).
++    rsb     r3, r3, #8
++    lsls    ip, r3, #31
++    beq     strcat_align_to_32
++
++    ldrb    r5, [r0]
++    cbz     r5, strcat_r0_scan_done
++    add     r0, r0, #1
++
++strcat_align_to_32:
++    bcc     strcat_align_to_64
++
++    ldrb    r2, [r0]
++    cbz     r2, strcat_r0_scan_done
++    add     r0, r0, #1
++    ldrb    r4, [r0]
++    cbz     r4, strcat_r0_scan_done
++    add     r0, r0, #1
++
++strcat_align_to_64:
++    tst     r3, #4
++    beq     strcat_mainloop
++    ldr     r3, [r0], #4
++
++    sub     ip, r3, #0x01010101
++    bic     ip, ip, r3
++    ands    ip, ip, #0x80808080
++    bne     strcat_zero_in_second_register
++    b       strcat_mainloop
++
++strcat_r0_scan_done:
++    // For short copies, hard-code checking the first 8 bytes since this
++    // new code doesn't win until after about 8 bytes.
++    m_copy_byte reg=r2, cmd=cbz, label=strcpy_finish
++    m_copy_byte reg=r3, cmd=cbz, label=strcpy_finish
++    m_copy_byte reg=r4, cmd=cbz, label=strcpy_finish
++    m_copy_byte reg=r5, cmd=cbz, label=strcpy_finish
++    m_copy_byte reg=r2, cmd=cbz, label=strcpy_finish
++    m_copy_byte reg=r3, cmd=cbz, label=strcpy_finish
++    m_copy_byte reg=r4, cmd=cbz, label=strcpy_finish
++    m_copy_byte reg=r5, cmd=cbnz, label=strcpy_continue
++
++strcpy_finish:
++    m_pop
++
++strcpy_continue:
++    ands    r3, r0, #7
++    beq     strcpy_check_src_align
++
++    // Align to a double word (64 bits).
++    rsb     r3, r3, #8
++    lsls    ip, r3, #31
++    beq     strcpy_align_to_32
++
++    ldrb    r2, [r1], #1
++    strb    r2, [r0], #1
++    cbz     r2, strcpy_complete
++
++strcpy_align_to_32:
++    bcc     strcpy_align_to_64
++
++    ldrb    r2, [r1], #1
++    strb    r2, [r0], #1
++    cbz     r2, strcpy_complete
++    ldrb    r2, [r1], #1
++    strb    r2, [r0], #1
++    cbz     r2, strcpy_complete
++
++strcpy_align_to_64:
++    tst     r3, #4
++    beq     strcpy_check_src_align
++    ldr     r2, [r1], #4
++
++    sub     ip, r2, #0x01010101
++    bic     ip, ip, r2
++    ands    ip, ip, #0x80808080
++    bne     strcpy_zero_in_first_register
++    str     r2, [r0], #4
++
++strcpy_check_src_align:
++    // At this point dst is aligned to a double word, check if src
++    // is also aligned to a double word.
++    ands    r3, r1, #7
++    bne     strcpy_unaligned_copy
++
++    .p2align 2
++strcpy_mainloop:
++    ldrd    r2, r3, [r1], #8
++
++    pld     [r1, #64]
++
++    sub     ip, r2, #0x01010101
++    bic     ip, ip, r2
++    ands    ip, ip, #0x80808080
++    bne     strcpy_zero_in_first_register
++
++    sub     ip, r3, #0x01010101
++    bic     ip, ip, r3
++    ands    ip, ip, #0x80808080
++    bne     strcpy_zero_in_second_register
++
++    strd    r2, r3, [r0], #8
++    b       strcpy_mainloop
++
++strcpy_complete:
++    m_pop
++
++strcpy_zero_in_first_register:
++    lsls    lr, ip, #17
++    bne     strcpy_copy1byte
++    bcs     strcpy_copy2bytes
++    lsls    ip, ip, #1
++    bne     strcpy_copy3bytes
++
++strcpy_copy4bytes:
++    // Copy 4 bytes to the destiniation.
++    str     r2, [r0]
++    m_pop
++
++strcpy_copy1byte:
++    strb    r2, [r0]
++    m_pop
++
++strcpy_copy2bytes:
++    strh    r2, [r0]
++    m_pop
++
++strcpy_copy3bytes:
++    strh    r2, [r0], #2
++    lsr     r2, #16
++    strb    r2, [r0]
++    m_pop
++
++strcpy_zero_in_second_register:
++    lsls    lr, ip, #17
++    bne     strcpy_copy5bytes
++    bcs     strcpy_copy6bytes
++    lsls    ip, ip, #1
++    bne     strcpy_copy7bytes
++
++    // Copy 8 bytes to the destination.
++    strd    r2, r3, [r0]
++    m_pop
++
++strcpy_copy5bytes:
++    str     r2, [r0], #4
++    strb    r3, [r0]
++    m_pop
++
++strcpy_copy6bytes:
++    str     r2, [r0], #4
++    strh    r3, [r0]
++    m_pop
++
++strcpy_copy7bytes:
++    str     r2, [r0], #4
++    strh    r3, [r0], #2
++    lsr     r3, #16
++    strb    r3, [r0]
++    m_pop
++
++strcpy_unaligned_copy:
++    // Dst is aligned to a double word, while src is at an unknown alignment.
++    // There are 7 different versions of the unaligned copy code
++    // to prevent overreading the src. The mainloop of every single version
++    // will store 64 bits per loop. The difference is how much of src can
++    // be read without potentially crossing a page boundary.
++    tbb     [pc, r3]
++strcpy_unaligned_branchtable:
++    .byte 0
++    .byte ((strcpy_unalign7 - strcpy_unaligned_branchtable)/2)
++    .byte ((strcpy_unalign6 - strcpy_unaligned_branchtable)/2)
++    .byte ((strcpy_unalign5 - strcpy_unaligned_branchtable)/2)
++    .byte ((strcpy_unalign4 - strcpy_unaligned_branchtable)/2)
++    .byte ((strcpy_unalign3 - strcpy_unaligned_branchtable)/2)
++    .byte ((strcpy_unalign2 - strcpy_unaligned_branchtable)/2)
++    .byte ((strcpy_unalign1 - strcpy_unaligned_branchtable)/2)
++
++    .p2align 2
++    // Can read 7 bytes before possibly crossing a page.
++strcpy_unalign7:
++    ldr     r2, [r1], #4
++
++    sub     ip, r2, #0x01010101
++    bic     ip, ip, r2
++    ands    ip, ip, #0x80808080
++    bne     strcpy_zero_in_first_register
++
++    ldrb    r3, [r1]
++    cbz     r3, strcpy_unalign7_copy5bytes
++    ldrb    r4, [r1, #1]
++    cbz     r4, strcpy_unalign7_copy6bytes
++    ldrb    r5, [r1, #2]
++    cbz     r5, strcpy_unalign7_copy7bytes
++
++    ldr     r3, [r1], #4
++    pld     [r1, #64]
++
++    lsrs    ip, r3, #24
++    strd    r2, r3, [r0], #8
++    beq     strcpy_unalign_return
++    b       strcpy_unalign7
++
++strcpy_unalign7_copy5bytes:
++    str     r2, [r0], #4
++    strb    r3, [r0]
++strcpy_unalign_return:
++    m_pop
++
++strcpy_unalign7_copy6bytes:
++    str     r2, [r0], #4
++    strb    r3, [r0], #1
++    strb    r4, [r0], #1
++    m_pop
++
++strcpy_unalign7_copy7bytes:
++    str     r2, [r0], #4
++    strb    r3, [r0], #1
++    strb    r4, [r0], #1
++    strb    r5, [r0], #1
++    m_pop
++
++    .p2align 2
++    // Can read 6 bytes before possibly crossing a page.
++strcpy_unalign6:
++    ldr     r2, [r1], #4
++
++    sub     ip, r2, #0x01010101
++    bic     ip, ip, r2
++    ands    ip, ip, #0x80808080
++    bne     strcpy_zero_in_first_register
++
++    ldrb    r4, [r1]
++    cbz     r4, strcpy_unalign_copy5bytes
++    ldrb    r5, [r1, #1]
++    cbz     r5, strcpy_unalign_copy6bytes
++
++    ldr     r3, [r1], #4
++    pld     [r1, #64]
++
++    tst     r3, #0xff0000
++    beq     strcpy_copy7bytes
++    lsrs    ip, r3, #24
++    strd    r2, r3, [r0], #8
++    beq     strcpy_unalign_return
++    b       strcpy_unalign6
++
++    .p2align 2
++    // Can read 5 bytes before possibly crossing a page.
++strcpy_unalign5:
++    ldr     r2, [r1], #4
++
++    sub     ip, r2, #0x01010101
++    bic     ip, ip, r2
++    ands    ip, ip, #0x80808080
++    bne     strcpy_zero_in_first_register
++
++    ldrb    r4, [r1]
++    cbz     r4, strcpy_unalign_copy5bytes
++
++    ldr     r3, [r1], #4
++
++    pld     [r1, #64]
++
++    sub     ip, r3, #0x01010101
++    bic     ip, ip, r3
++    ands    ip, ip, #0x80808080
++    bne     strcpy_zero_in_second_register
++
++    strd    r2, r3, [r0], #8
++    b       strcpy_unalign5
++
++strcpy_unalign_copy5bytes:
++    str     r2, [r0], #4
++    strb    r4, [r0]
++    m_pop
++
++strcpy_unalign_copy6bytes:
++    str     r2, [r0], #4
++    strb    r4, [r0], #1
++    strb    r5, [r0]
++    m_pop
++
++    .p2align 2
++    // Can read 4 bytes before possibly crossing a page.
++strcpy_unalign4:
++    ldr     r2, [r1], #4
++
++    sub     ip, r2, #0x01010101
++    bic     ip, ip, r2
++    ands    ip, ip, #0x80808080
++    bne     strcpy_zero_in_first_register
++
++    ldr     r3, [r1], #4
++    pld     [r1, #64]
++
++    sub     ip, r3, #0x01010101
++    bic     ip, ip, r3
++    ands    ip, ip, #0x80808080
++    bne     strcpy_zero_in_second_register
++
++    strd    r2, r3, [r0], #8
++    b       strcpy_unalign4
++
++    .p2align 2
++    // Can read 3 bytes before possibly crossing a page.
++strcpy_unalign3:
++    ldrb    r2, [r1]
++    cbz     r2, strcpy_unalign3_copy1byte
++    ldrb    r3, [r1, #1]
++    cbz     r3, strcpy_unalign3_copy2bytes
++    ldrb    r4, [r1, #2]
++    cbz     r4, strcpy_unalign3_copy3bytes
++
++    ldr     r2, [r1], #4
++    ldr     r3, [r1], #4
++
++    pld     [r1, #64]
++
++    lsrs    lr, r2, #24
++    beq     strcpy_copy4bytes
++
++    sub     ip, r3, #0x01010101
++    bic     ip, ip, r3
++    ands    ip, ip, #0x80808080
++    bne     strcpy_zero_in_second_register
++
++    strd    r2, r3, [r0], #8
++    b       strcpy_unalign3
++
++strcpy_unalign3_copy1byte:
++    strb    r2, [r0]
++    m_pop
++
++strcpy_unalign3_copy2bytes:
++    strb    r2, [r0], #1
++    strb    r3, [r0]
++    m_pop
++
++strcpy_unalign3_copy3bytes:
++    strb    r2, [r0], #1
++    strb    r3, [r0], #1
++    strb    r4, [r0]
++    m_pop
++
++    .p2align 2
++    // Can read 2 bytes before possibly crossing a page.
++strcpy_unalign2:
++    ldrb    r2, [r1]
++    cbz     r2, strcpy_unalign_copy1byte
++    ldrb    r4, [r1, #1]
++    cbz     r4, strcpy_unalign_copy2bytes
++
++    ldr     r2, [r1], #4
++    ldr     r3, [r1], #4
++    pld     [r1, #64]
++
++    tst     r2, #0xff0000
++    beq     strcpy_copy3bytes
++    lsrs    ip, r2, #24
++    beq     strcpy_copy4bytes
++
++    sub     ip, r3, #0x01010101
++    bic     ip, ip, r3
++    ands    ip, ip, #0x80808080
++    bne     strcpy_zero_in_second_register
++
++    strd    r2, r3, [r0], #8
++    b       strcpy_unalign2
++
++    .p2align 2
++    // Can read 1 byte before possibly crossing a page.
++strcpy_unalign1:
++    ldrb    r2, [r1]
++    cbz     r2, strcpy_unalign_copy1byte
++
++    ldr     r2, [r1], #4
++    ldr     r3, [r1], #4
++
++    pld     [r1, #64]
++
++    sub     ip, r2, #0x01010101
++    bic     ip, ip, r2
++    ands    ip, ip, #0x80808080
++    bne     strcpy_zero_in_first_register
++
++    sub     ip, r3, #0x01010101
++    bic     ip, ip, r3
++    ands    ip, ip, #0x80808080
++    bne     strcpy_zero_in_second_register
++
++    strd    r2, r3, [r0], #8
++    b       strcpy_unalign1
++
++strcpy_unalign_copy1byte:
++    strb    r2, [r0]
++    m_pop
++
++strcpy_unalign_copy2bytes:
++    strb    r2, [r0], #1
++    strb    r4, [r0]
++    m_pop
++
++    .p2align 2
++strcat_mainloop:
++    ldrd    r2, r3, [r0], #8
++
++    pld     [r0, #64]
++
++    sub     ip, r2, #0x01010101
++    bic     ip, ip, r2
++    ands    ip, ip, #0x80808080
++    bne     strcat_zero_in_first_register
++
++    sub     ip, r3, #0x01010101
++    bic     ip, ip, r3
++    ands    ip, ip, #0x80808080
++    bne     strcat_zero_in_second_register
++    b       strcat_mainloop
++
++strcat_zero_in_first_register:
++    // Prefetch the src now, it's going to be used soon.
++    pld     [r1, #0]
++    lsls    lr, ip, #17
++    bne     strcat_sub8
++    bcs     strcat_sub7
++    lsls    ip, ip, #1
++    bne     strcat_sub6
++
++    sub     r0, r0, #5
++    b       strcat_r0_scan_done
++
++strcat_sub8:
++    sub     r0, r0, #8
++    b       strcat_r0_scan_done
++
++strcat_sub7:
++    sub     r0, r0, #7
++    b       strcat_r0_scan_done
++
++strcat_sub6:
++    sub     r0, r0, #6
++    b       strcat_r0_scan_done
++
++strcat_zero_in_second_register:
++    // Prefetch the src now, it's going to be used soon.
++    pld     [r1, #0]
++    lsls    lr, ip, #17
++    bne     strcat_sub4
++    bcs     strcat_sub3
++    lsls    ip, ip, #1
++    bne     strcat_sub2
++
++    sub     r0, r0, #1
++    b       strcat_r0_scan_done
++
++strcat_sub4:
++    sub     r0, r0, #4
++    b       strcat_r0_scan_done
++
++strcat_sub3:
++    sub     r0, r0, #3
++    b       strcat_r0_scan_done
++
++strcat_sub2:
++    sub     r0, r0, #2
++    b       strcat_r0_scan_done
++END(strcat)
+diff --git a/libc/arch-arm/bionic/cortex-a15/strcmp.S b/libc/arch-arm/bionic/cortex-a15/strcmp.S
+new file mode 100644
+index 0000000..d4cf3f4
+--- /dev/null
++++ b/libc/arch-arm/bionic/cortex-a15/strcmp.S
+@@ -0,0 +1,500 @@
++/*
++ * Copyright (c) 2013 ARM Ltd
++ * All rights reserved.
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions
++ * are met:
++ * 1. Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer.
++ * 2. Redistributions in binary form must reproduce the above copyright
++ *    notice, this list of conditions and the following disclaimer in the
++ *    documentation and/or other materials provided with the distribution.
++ * 3. The name of the company may not be used to endorse or promote
++ *    products derived from this software without specific prior written
++ *    permission.
++ *
++ * THIS SOFTWARE IS PROVIDED BY ARM LTD ``AS IS'' AND ANY EXPRESS OR IMPLIED
++ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
++ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
++ * IN NO EVENT SHALL ARM LTD BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
++ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
++ * TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
++ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
++ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
++ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
++ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++ */
++
++#include <machine/cpu-features.h>
++#include <machine/asm.h>
++
++#ifdef __ARMEB__
++#define S2LOMEM lsl
++#define S2LOMEMEQ lsleq
++#define S2HIMEM lsr
++#define MSB 0x000000ff
++#define LSB 0xff000000
++#define BYTE0_OFFSET 24
++#define BYTE1_OFFSET 16
++#define BYTE2_OFFSET 8
++#define BYTE3_OFFSET 0
++#else /* not  __ARMEB__ */
++#define S2LOMEM lsr
++#define S2LOMEMEQ lsreq
++#define S2HIMEM lsl
++#define BYTE0_OFFSET 0
++#define BYTE1_OFFSET 8
++#define BYTE2_OFFSET 16
++#define BYTE3_OFFSET 24
++#define MSB 0xff000000
++#define LSB 0x000000ff
++#endif /* not  __ARMEB__ */
++
++.syntax         unified
++
++#if defined (__thumb__)
++        .thumb
++        .thumb_func
++#endif
++
++ENTRY(strcmp)
++      /* Use LDRD whenever possible.  */
++
++/* The main thing to look out for when comparing large blocks is that
++   the loads do not cross a page boundary when loading past the index
++   of the byte with the first difference or the first string-terminator.
++
++   For example, if the strings are identical and the string-terminator
++   is at index k, byte by byte comparison will not load beyond address
++   s1+k and s2+k; word by word comparison may load up to 3 bytes beyond
++   k; double word - up to 7 bytes.  If the load of these bytes crosses
++   a page boundary, it might cause a memory fault (if the page is not mapped)
++   that would not have happened in byte by byte comparison.
++
++   If an address is (double) word aligned, then a load of a (double) word
++   from that address will not cross a page boundary.
++   Therefore, the algorithm below considers word and double-word alignment
++   of strings separately.  */
++
++/* High-level description of the algorithm.
++
++   * The fast path: if both strings are double-word aligned,
++     use LDRD to load two words from each string in every loop iteration.
++   * If the strings have the same offset from a word boundary,
++     use LDRB to load and compare byte by byte until
++     the first string is aligned to a word boundary (at most 3 bytes).
++     This is optimized for quick return on short unaligned strings.
++   * If the strings have the same offset from a double-word boundary,
++     use LDRD to load two words from each string in every loop iteration, as in the fast path.
++   * If the strings do not have the same offset from a double-word boundary,
++     load a word from the second string before the loop to initialize the queue.
++     Use LDRD to load two words from every string in every loop iteration.
++     Inside the loop, load the second word from the second string only after comparing
++     the first word, using the queued value, to guarantee safety across page boundaries.
++   * If the strings do not have the same offset from a word boundary,
++     use LDR and a shift queue. Order of loads and comparisons matters,
++     similarly to the previous case.
++
++   * Use UADD8 and SEL to compare words, and use REV and CLZ to compute the return value.
++   * The only difference between ARM and Thumb modes is the use of CBZ instruction.
++   * The only difference between big and little endian is the use of REV in little endian
++     to compute the return value, instead of MOV.
++*/
++
++        .macro m_cbz reg label
++#ifdef __thumb2__
++        cbz     \reg, \label
++#else   /* not defined __thumb2__ */
++        cmp     \reg, #0
++        beq     \label
++#endif /* not defined __thumb2__ */
++        .endm /* m_cbz */
++
++        .macro m_cbnz reg label
++#ifdef __thumb2__
++        cbnz    \reg, \label
++#else   /* not defined __thumb2__ */
++        cmp     \reg, #0
++        bne     \label
++#endif /* not defined __thumb2__ */
++        .endm /* m_cbnz */
++
++        .macro  init
++        /* Macro to save temporary registers and prepare magic values.  */
++        subs    sp, sp, #16
++        .cfi_def_cfa_offset 16
++        strd    r4, r5, [sp, #8]
++        .cfi_rel_offset r4, 0
++        .cfi_rel_offset r5, 4
++        strd    r6, r7, [sp]
++        .cfi_rel_offset r6, 8
++        .cfi_rel_offset r7, 12
++        mvn     r6, #0  /* all F */
++        mov     r7, #0  /* all 0 */
++        .endm   /* init */
++
++        .macro  magic_compare_and_branch w1 w2 label
++        /* Macro to compare registers w1 and w2 and conditionally branch to label.  */
++        cmp     \w1, \w2        /* Are w1 and w2 the same?  */
++        magic_find_zero_bytes \w1
++        it      eq
++        cmpeq   ip, #0          /* Is there a zero byte in w1?  */
++        bne     \label
++        .endm /* magic_compare_and_branch */
++
++        .macro  magic_find_zero_bytes w1
++        /* Macro to find all-zero bytes in w1, result is in ip.  */
++#if (defined (__ARM_FEATURE_DSP))
++        uadd8   ip, \w1, r6
++        sel     ip, r7, r6
++#else /* not defined (__ARM_FEATURE_DSP) */
++        /* __ARM_FEATURE_DSP is not defined for some Cortex-M processors.
++        Coincidently, these processors only have Thumb-2 mode, where we can use the
++        the (large) magic constant available directly as an immediate in instructions.
++        Note that we cannot use the magic constant in ARM mode, where we need
++        to create the constant in a register.  */
++        sub     ip, \w1, #0x01010101
++        bic     ip, ip, \w1
++        and     ip, ip, #0x80808080
++#endif /* not defined (__ARM_FEATURE_DSP) */
++        .endm /* magic_find_zero_bytes */
++
++        .macro  setup_return w1 w2
++#ifdef __ARMEB__
++        mov     r1, \w1
++        mov     r2, \w2
++#else /* not  __ARMEB__ */
++        rev     r1, \w1
++        rev     r2, \w2
++#endif /* not  __ARMEB__ */
++        .endm /* setup_return */
++
++        .cfi_startproc
++        pld [r0, #0]
++        pld [r1, #0]
++
++        /* Are both strings double-word aligned?  */
++        orr     ip, r0, r1
++        tst     ip, #7
++        bne     .L_do_align
++
++        /* Fast path.  */
++        .save   {r4-r7}
++        init
++
++.L_doubleword_aligned:
++
++        /* Get here when the strings to compare are double-word aligned.  */
++        /* Compare two words in every iteration.  */
++        .p2align        2
++2:
++        pld [r0, #16]
++        pld [r1, #16]
++
++        /* Load the next double-word from each string.  */
++        ldrd    r2, r3, [r0], #8
++        ldrd    r4, r5, [r1], #8
++
++        magic_compare_and_branch w1=r2, w2=r4, label=.L_return_24
++        magic_compare_and_branch w1=r3, w2=r5, label=.L_return_35
++        b       2b
++
++.L_do_align:
++        /* Is the first string word-aligned?  */
++        ands    ip, r0, #3
++        beq     .L_word_aligned_r0
++
++        /* Fast compare byte by byte until the first string is word-aligned.  */
++        /* The offset of r0 from a word boundary is in ip. Thus, the number of bytes
++        to read until the next word boundary is 4-ip.  */
++        bic     r0, r0, #3
++        ldr     r2, [r0], #4
++        lsls    ip, ip, #31
++        beq     .L_byte2
++        bcs     .L_byte3
++
++.L_byte1:
++        ldrb    ip, [r1], #1
++        uxtb    r3, r2, ror #BYTE1_OFFSET
++        subs    ip, r3, ip
++        bne     .L_fast_return
++        m_cbz   reg=r3, label=.L_fast_return
++
++.L_byte2:
++        ldrb    ip, [r1], #1
++        uxtb    r3, r2, ror #BYTE2_OFFSET
++        subs    ip, r3, ip
++        bne     .L_fast_return
++        m_cbz   reg=r3, label=.L_fast_return
++
++.L_byte3:
++        ldrb    ip, [r1], #1
++        uxtb    r3, r2, ror #BYTE3_OFFSET
++        subs    ip, r3, ip
++        bne     .L_fast_return
++        m_cbnz  reg=r3, label=.L_word_aligned_r0
++
++.L_fast_return:
++        mov     r0, ip
++        bx      lr
++
++.L_word_aligned_r0:
++        init
++        /* The first string is word-aligned.  */
++        /* Is the second string word-aligned?  */
++        ands    ip, r1, #3
++        bne     .L_strcmp_unaligned
++
++.L_word_aligned:
++        /* The strings are word-aligned. */
++        /* Is the first string double-word aligned?  */
++        tst     r0, #4
++        beq     .L_doubleword_aligned_r0
++
++        /* If r0 is not double-word aligned yet, align it by loading
++        and comparing the next word from each string.  */
++        ldr     r2, [r0], #4
++        ldr     r4, [r1], #4
++        magic_compare_and_branch w1=r2 w2=r4 label=.L_return_24
++
++.L_doubleword_aligned_r0:
++        /* Get here when r0 is double-word aligned.  */
++        /* Is r1 doubleword_aligned?  */
++        tst     r1, #4
++        beq     .L_doubleword_aligned
++
++        /* Get here when the strings to compare are word-aligned,
++        r0 is double-word aligned, but r1 is not double-word aligned.  */
++
++        /* Initialize the queue.  */
++        ldr     r5, [r1], #4
++
++        /* Compare two words in every iteration.  */
++        .p2align        2
++3:
++        pld [r0, #16]
++        pld [r1, #16]
++
++        /* Load the next double-word from each string and compare.  */
++        ldrd    r2, r3, [r0], #8
++        magic_compare_and_branch w1=r2 w2=r5 label=.L_return_25
++        ldrd    r4, r5, [r1], #8
++        magic_compare_and_branch w1=r3 w2=r4 label=.L_return_34
++        b       3b
++
++        .macro miscmp_word offsetlo offsethi
++        /* Macro to compare misaligned strings.  */
++        /* r0, r1 are word-aligned, and at least one of the strings
++        is not double-word aligned.  */
++        /* Compare one word in every loop iteration.  */
++        /* OFFSETLO is the original bit-offset of r1 from a word-boundary,
++        OFFSETHI is 32 - OFFSETLO (i.e., offset from the next word).  */
++
++        /* Initialize the shift queue.  */
++        ldr     r5, [r1], #4
++
++        /* Compare one word from each string in every loop iteration.  */
++        .p2align        2
++7:
++        ldr     r3, [r0], #4
++        S2LOMEM r5, r5, #\offsetlo
++        magic_find_zero_bytes w1=r3
++        cmp     r7, ip, S2HIMEM #\offsetlo
++        and     r2, r3, r6, S2LOMEM #\offsetlo
++        it      eq
++        cmpeq   r2, r5
++        bne     .L_return_25
++        ldr     r5, [r1], #4
++        cmp     ip, #0
++        eor r3, r2, r3
++        S2HIMEM r2, r5, #\offsethi
++        it      eq
++        cmpeq   r3, r2
++        bne     .L_return_32
++        b       7b
++        .endm /* miscmp_word */
++
++.L_strcmp_unaligned:
++        /* r0 is word-aligned, r1 is at offset ip from a word.  */
++        /* Align r1 to the (previous) word-boundary.  */
++        bic     r1, r1, #3
++
++        /* Unaligned comparison word by word using LDRs. */
++        cmp     ip, #2
++        beq     .L_miscmp_word_16                 /* If ip == 2.  */
++        bge     .L_miscmp_word_24                 /* If ip == 3.  */
++        miscmp_word offsetlo=8 offsethi=24        /* If ip == 1.  */
++.L_miscmp_word_24:  miscmp_word offsetlo=24 offsethi=8
++
++
++.L_return_32:
++        setup_return w1=r3, w2=r2
++        b       .L_do_return
++.L_return_34:
++        setup_return w1=r3, w2=r4
++        b       .L_do_return
++.L_return_25:
++        setup_return w1=r2, w2=r5
++        b       .L_do_return
++.L_return_35:
++        setup_return w1=r3, w2=r5
++        b       .L_do_return
++.L_return_24:
++        setup_return w1=r2, w2=r4
++
++.L_do_return:
++
++#ifdef __ARMEB__
++        mov     r0, ip
++#else /* not  __ARMEB__ */
++        rev     r0, ip
++#endif /* not  __ARMEB__ */
++
++        /* Restore temporaries early, before computing the return value.  */
++        ldrd    r6, r7, [sp]
++        ldrd    r4, r5, [sp, #8]
++        adds    sp, sp, #16
++        .cfi_def_cfa_offset 0
++        .cfi_restore r4
++        .cfi_restore r5
++        .cfi_restore r6
++        .cfi_restore r7
++
++        /* There is a zero or a different byte between r1 and r2.  */
++        /* r0 contains a mask of all-zero bytes in r1.  */
++        /* Using r0 and not ip here because cbz requires low register.  */
++        m_cbz   reg=r0, label=.L_compute_return_value
++        clz     r0, r0
++        /* r0 contains the number of bits on the left of the first all-zero byte in r1.  */
++        rsb     r0, r0, #24
++        /* Here, r0 contains the number of bits on the right of the first all-zero byte in r1.  */
++        lsr     r1, r1, r0
++        lsr     r2, r2, r0
++
++.L_compute_return_value:
++        movs    r0, #1
++        cmp     r1, r2
++        /* The return value is computed as follows.
++        If r1>r2 then (C==1 and Z==0) and LS doesn't hold and r0 is #1 at return.
++        If r1<r2 then (C==0 and Z==0) and we execute SBC with carry_in=0,
++        which means r0:=r0-r0-1 and r0 is #-1 at return.
++        If r1=r2 then (C==1 and Z==1) and we execute SBC with carry_in=1,
++        which means r0:=r0-r0 and r0 is #0 at return.
++        (C==0 and Z==1) cannot happen because the carry bit is "not borrow".  */
++        it      ls
++        sbcls   r0, r0, r0
++        bx      lr
++
++    /* The code from the previous version of strcmp.S handles this
++     * particular case (the second string is 2 bytes off a word alignment)
++     * faster than any current version. In this very specific case, use the
++     * previous version. See bionic/libc/arch-arm/cortex-a15/bionic/strcmp.S
++     * for the unedited version of this code.
++     */
++.L_miscmp_word_16:
++	wp1 .req r0
++	wp2 .req r1
++	b1  .req r2
++	w1  .req r4
++	w2  .req r5
++	t1  .req ip
++	@ r3 is scratch
++
++    /* At this point, wp1 (r0) has already been word-aligned. */
++2:
++	mov	b1, #1
++	orr	b1, b1, b1, lsl #8
++	orr	b1, b1, b1, lsl #16
++
++	and	t1, wp2, #3
++	bic	wp2, wp2, #3
++	ldr	w1, [wp1], #4
++	ldr	w2, [wp2], #4
++
++	/* Critical inner Loop: Block with 2 bytes initial overlap */
++	.p2align	2
++2:
++	S2HIMEM	t1, w1, #16
++	sub	r3, w1, b1
++	S2LOMEM	t1, t1, #16
++	bic	r3, r3, w1
++	cmp	t1, w2, S2LOMEM #16
++	bne	4f
++	ands	r3, r3, b1, lsl #7
++	it	eq
++	ldreq	w2, [wp2], #4
++	bne	5f
++	eor	t1, t1, w1
++	cmp	t1, w2, S2HIMEM #16
++	bne	6f
++	ldr	w1, [wp1], #4
++	b	2b
++
++5:
++#ifdef __ARMEB__
++	/* The syndrome value may contain false ones if the string ends
++	 * with the bytes 0x01 0x00
++	 */
++	tst	w1, #0xff000000
++	it	ne
++	tstne	w1, #0x00ff0000
++	beq	7f
++#else
++	lsls	r3, r3, #16
++	bne	7f
++#endif
++	ldrh	w2, [wp2]
++	S2LOMEM	t1, w1, #16
++#ifdef __ARMEB__
++	lsl	w2, w2, #16
++#endif
++	b	8f
++
++6:
++	S2HIMEM	w2, w2, #16
++	S2LOMEM	t1, w1, #16
++4:
++	S2LOMEM	w2, w2, #16
++	b	8f
++
++7:
++	mov	r0, #0
++
++    /* Restore registers and stack. */
++    ldrd    r6, r7, [sp]
++    ldrd    r4, r5, [sp, #8]
++    adds    sp, sp, #16
++    .cfi_def_cfa_offset 0
++    .cfi_restore r4
++    .cfi_restore r5
++    .cfi_restore r6
++    .cfi_restore r7
++
++	bx	lr
++
++8:
++	and	r2, t1, #LSB
++	and	r0, w2, #LSB
++	cmp	r0, #1
++	it	cs
++	cmpcs	r0, r2
++	itt	eq
++	S2LOMEMEQ	t1, t1, #8
++	S2LOMEMEQ	w2, w2, #8
++	beq	8b
++	sub	r0, r2, r0
++
++    /* Restore registers and stack. */
++    ldrd    r6, r7, [sp]
++    ldrd    r4, r5, [sp, #8]
++    adds    sp, sp, #16
++    .cfi_def_cfa_offset 0
++    .cfi_restore r4
++    .cfi_restore r5
++    .cfi_restore r6
++    .cfi_restore r7
++
++	bx	lr
++    .cfi_endproc
++END(strcmp)
+diff --git a/libc/arch-arm/bionic/cortex-a15/strcpy.S b/libc/arch-arm/bionic/cortex-a15/strcpy.S
+new file mode 100644
+index 0000000..5773540
+--- /dev/null
++++ b/libc/arch-arm/bionic/cortex-a15/strcpy.S
+@@ -0,0 +1,451 @@
++/*
++ * Copyright (C) 2013 The Android Open Source Project
++ * All rights reserved.
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions
++ * are met:
++ *  * Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer.
++ *  * Redistributions in binary form must reproduce the above copyright
++ *    notice, this list of conditions and the following disclaimer in
++ *    the documentation and/or other materials provided with the
++ *    distribution.
++ *
++ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
++ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
++ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
++ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
++ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
++ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
++ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
++ * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
++ * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
++ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
++ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
++ * SUCH DAMAGE.
++ */
++/*
++ * Copyright (c) 2013 ARM Ltd
++ * All rights reserved.
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions
++ * are met:
++ * 1. Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer.
++ * 2. Redistributions in binary form must reproduce the above copyright
++ *    notice, this list of conditions and the following disclaimer in the
++ *    documentation and/or other materials provided with the distribution.
++ * 3. The name of the company may not be used to endorse or promote
++ *    products derived from this software without specific prior written
++ *    permission.
++ *
++ * THIS SOFTWARE IS PROVIDED BY ARM LTD ``AS IS'' AND ANY EXPRESS OR IMPLIED
++ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
++ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
++ * IN NO EVENT SHALL ARM LTD BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
++ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
++ * TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
++ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
++ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
++ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
++ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++ */
++
++#include <machine/asm.h>
++
++    .syntax unified
++
++    .thumb
++    .thumb_func
++
++    .macro m_push
++    push    {r0, r4, r5, lr}
++    .endm // m_push
++
++    .macro m_pop
++    pop     {r0, r4, r5, pc}
++    .endm // m_pop
++
++    .macro m_copy_byte reg, cmd, label
++    ldrb    \reg, [r1], #1
++    strb    \reg, [r0], #1
++    \cmd    \reg, \label
++    .endm // m_copy_byte
++
++ENTRY(strcpy)
++    // For short copies, hard-code checking the first 8 bytes since this
++    // new code doesn't win until after about 8 bytes.
++    m_push
++    m_copy_byte reg=r2, cmd=cbz, label=strcpy_finish
++    m_copy_byte reg=r3, cmd=cbz, label=strcpy_finish
++    m_copy_byte reg=r4, cmd=cbz, label=strcpy_finish
++    m_copy_byte reg=r5, cmd=cbz, label=strcpy_finish
++    m_copy_byte reg=r2, cmd=cbz, label=strcpy_finish
++    m_copy_byte reg=r3, cmd=cbz, label=strcpy_finish
++    m_copy_byte reg=r4, cmd=cbz, label=strcpy_finish
++    m_copy_byte reg=r5, cmd=cbnz, label=strcpy_continue
++
++strcpy_finish:
++    m_pop
++
++strcpy_continue:
++    pld     [r1, #0]
++    ands    r3, r0, #7
++    beq     strcpy_check_src_align
++
++    // Align to a double word (64 bits).
++    rsb     r3, r3, #8
++    lsls    ip, r3, #31
++    beq     strcpy_align_to_32
++
++    ldrb    r2, [r1], #1
++    strb    r2, [r0], #1
++    cbz     r2, strcpy_complete
++
++strcpy_align_to_32:
++    bcc     strcpy_align_to_64
++
++    ldrb    r2, [r1], #1
++    strb    r2, [r0], #1
++    cbz     r2, strcpy_complete
++    ldrb    r2, [r1], #1
++    strb    r2, [r0], #1
++    cbz     r2, strcpy_complete
++
++strcpy_align_to_64:
++    tst     r3, #4
++    beq     strcpy_check_src_align
++    ldr     r2, [r1], #4
++
++    sub     ip, r2, #0x01010101
++    bic     ip, ip, r2
++    ands    ip, ip, #0x80808080
++    bne     strcpy_zero_in_first_register
++    str     r2, [r0], #4
++
++strcpy_check_src_align:
++    // At this point dst is aligned to a double word, check if src
++    // is also aligned to a double word.
++    ands    r3, r1, #7
++    bne     strcpy_unaligned_copy
++
++    .p2align 2
++strcpy_mainloop:
++    ldrd    r2, r3, [r1], #8
++
++    pld     [r1, #64]
++
++    sub     ip, r2, #0x01010101
++    bic     ip, ip, r2
++    ands    ip, ip, #0x80808080
++    bne     strcpy_zero_in_first_register
++
++    sub     ip, r3, #0x01010101
++    bic     ip, ip, r3
++    ands    ip, ip, #0x80808080
++    bne     strcpy_zero_in_second_register
++
++    strd    r2, r3, [r0], #8
++    b       strcpy_mainloop
++
++strcpy_complete:
++    m_pop
++
++strcpy_zero_in_first_register:
++    lsls    lr, ip, #17
++    bne     strcpy_copy1byte
++    bcs     strcpy_copy2bytes
++    lsls    ip, ip, #1
++    bne     strcpy_copy3bytes
++
++strcpy_copy4bytes:
++    // Copy 4 bytes to the destiniation.
++    str     r2, [r0]
++    m_pop
++
++strcpy_copy1byte:
++    strb    r2, [r0]
++    m_pop
++
++strcpy_copy2bytes:
++    strh    r2, [r0]
++    m_pop
++
++strcpy_copy3bytes:
++    strh    r2, [r0], #2
++    lsr     r2, #16
++    strb    r2, [r0]
++    m_pop
++
++strcpy_zero_in_second_register:
++    lsls    lr, ip, #17
++    bne     strcpy_copy5bytes
++    bcs     strcpy_copy6bytes
++    lsls    ip, ip, #1
++    bne     strcpy_copy7bytes
++
++    // Copy 8 bytes to the destination.
++    strd    r2, r3, [r0]
++    m_pop
++
++strcpy_copy5bytes:
++    str     r2, [r0], #4
++    strb    r3, [r0]
++    m_pop
++
++strcpy_copy6bytes:
++    str     r2, [r0], #4
++    strh    r3, [r0]
++    m_pop
++
++strcpy_copy7bytes:
++    str     r2, [r0], #4
++    strh    r3, [r0], #2
++    lsr     r3, #16
++    strb    r3, [r0]
++    m_pop
++
++strcpy_unaligned_copy:
++    // Dst is aligned to a double word, while src is at an unknown alignment.
++    // There are 7 different versions of the unaligned copy code
++    // to prevent overreading the src. The mainloop of every single version
++    // will store 64 bits per loop. The difference is how much of src can
++    // be read without potentially crossing a page boundary.
++    tbb     [pc, r3]
++strcpy_unaligned_branchtable:
++    .byte 0
++    .byte ((strcpy_unalign7 - strcpy_unaligned_branchtable)/2)
++    .byte ((strcpy_unalign6 - strcpy_unaligned_branchtable)/2)
++    .byte ((strcpy_unalign5 - strcpy_unaligned_branchtable)/2)
++    .byte ((strcpy_unalign4 - strcpy_unaligned_branchtable)/2)
++    .byte ((strcpy_unalign3 - strcpy_unaligned_branchtable)/2)
++    .byte ((strcpy_unalign2 - strcpy_unaligned_branchtable)/2)
++    .byte ((strcpy_unalign1 - strcpy_unaligned_branchtable)/2)
++
++    .p2align 2
++    // Can read 7 bytes before possibly crossing a page.
++strcpy_unalign7:
++    ldr     r2, [r1], #4
++
++    sub     ip, r2, #0x01010101
++    bic     ip, ip, r2
++    ands    ip, ip, #0x80808080
++    bne     strcpy_zero_in_first_register
++
++    ldrb    r3, [r1]
++    cbz     r3, strcpy_unalign7_copy5bytes
++    ldrb    r4, [r1, #1]
++    cbz     r4, strcpy_unalign7_copy6bytes
++    ldrb    r5, [r1, #2]
++    cbz     r5, strcpy_unalign7_copy7bytes
++
++    ldr     r3, [r1], #4
++    pld     [r1, #64]
++
++    lsrs    ip, r3, #24
++    strd    r2, r3, [r0], #8
++    beq     strcpy_unalign_return
++    b       strcpy_unalign7
++
++strcpy_unalign7_copy5bytes:
++    str     r2, [r0], #4
++    strb    r3, [r0]
++strcpy_unalign_return:
++    m_pop
++
++strcpy_unalign7_copy6bytes:
++    str     r2, [r0], #4
++    strb    r3, [r0], #1
++    strb    r4, [r0], #1
++    m_pop
++
++strcpy_unalign7_copy7bytes:
++    str     r2, [r0], #4
++    strb    r3, [r0], #1
++    strb    r4, [r0], #1
++    strb    r5, [r0], #1
++    m_pop
++
++    .p2align 2
++    // Can read 6 bytes before possibly crossing a page.
++strcpy_unalign6:
++    ldr     r2, [r1], #4
++
++    sub     ip, r2, #0x01010101
++    bic     ip, ip, r2
++    ands    ip, ip, #0x80808080
++    bne     strcpy_zero_in_first_register
++
++    ldrb    r4, [r1]
++    cbz     r4, strcpy_unalign_copy5bytes
++    ldrb    r5, [r1, #1]
++    cbz     r5, strcpy_unalign_copy6bytes
++
++    ldr     r3, [r1], #4
++    pld     [r1, #64]
++
++    tst     r3, #0xff0000
++    beq     strcpy_copy7bytes
++    lsrs    ip, r3, #24
++    strd    r2, r3, [r0], #8
++    beq     strcpy_unalign_return
++    b       strcpy_unalign6
++
++    .p2align 2
++    // Can read 5 bytes before possibly crossing a page.
++strcpy_unalign5:
++    ldr     r2, [r1], #4
++
++    sub     ip, r2, #0x01010101
++    bic     ip, ip, r2
++    ands    ip, ip, #0x80808080
++    bne     strcpy_zero_in_first_register
++
++    ldrb    r4, [r1]
++    cbz     r4, strcpy_unalign_copy5bytes
++
++    ldr     r3, [r1], #4
++
++    pld     [r1, #64]
++
++    sub     ip, r3, #0x01010101
++    bic     ip, ip, r3
++    ands    ip, ip, #0x80808080
++    bne     strcpy_zero_in_second_register
++
++    strd    r2, r3, [r0], #8
++    b       strcpy_unalign5
++
++strcpy_unalign_copy5bytes:
++    str     r2, [r0], #4
++    strb    r4, [r0]
++    m_pop
++
++strcpy_unalign_copy6bytes:
++    str     r2, [r0], #4
++    strb    r4, [r0], #1
++    strb    r5, [r0]
++    m_pop
++
++    .p2align 2
++    // Can read 4 bytes before possibly crossing a page.
++strcpy_unalign4:
++    ldr     r2, [r1], #4
++
++    sub     ip, r2, #0x01010101
++    bic     ip, ip, r2
++    ands    ip, ip, #0x80808080
++    bne     strcpy_zero_in_first_register
++
++    ldr     r3, [r1], #4
++    pld     [r1, #64]
++
++    sub     ip, r3, #0x01010101
++    bic     ip, ip, r3
++    ands    ip, ip, #0x80808080
++    bne     strcpy_zero_in_second_register
++
++    strd    r2, r3, [r0], #8
++    b       strcpy_unalign4
++
++    .p2align 2
++    // Can read 3 bytes before possibly crossing a page.
++strcpy_unalign3:
++    ldrb    r2, [r1]
++    cbz     r2, strcpy_unalign3_copy1byte
++    ldrb    r3, [r1, #1]
++    cbz     r3, strcpy_unalign3_copy2bytes
++    ldrb    r4, [r1, #2]
++    cbz     r4, strcpy_unalign3_copy3bytes
++
++    ldr     r2, [r1], #4
++    ldr     r3, [r1], #4
++
++    pld     [r1, #64]
++
++    lsrs    lr, r2, #24
++    beq     strcpy_copy4bytes
++
++    sub     ip, r3, #0x01010101
++    bic     ip, ip, r3
++    ands    ip, ip, #0x80808080
++    bne     strcpy_zero_in_second_register
++
++    strd    r2, r3, [r0], #8
++    b       strcpy_unalign3
++
++strcpy_unalign3_copy1byte:
++    strb    r2, [r0]
++    m_pop
++
++strcpy_unalign3_copy2bytes:
++    strb    r2, [r0], #1
++    strb    r3, [r0]
++    m_pop
++
++strcpy_unalign3_copy3bytes:
++    strb    r2, [r0], #1
++    strb    r3, [r0], #1
++    strb    r4, [r0]
++    m_pop
++
++    .p2align 2
++    // Can read 2 bytes before possibly crossing a page.
++strcpy_unalign2:
++    ldrb    r2, [r1]
++    cbz     r2, strcpy_unalign_copy1byte
++    ldrb    r4, [r1, #1]
++    cbz     r4, strcpy_unalign_copy2bytes
++
++    ldr     r2, [r1], #4
++    ldr     r3, [r1], #4
++    pld     [r1, #64]
++
++    tst     r2, #0xff0000
++    beq     strcpy_copy3bytes
++    lsrs    ip, r2, #24
++    beq     strcpy_copy4bytes
++
++    sub     ip, r3, #0x01010101
++    bic     ip, ip, r3
++    ands    ip, ip, #0x80808080
++    bne     strcpy_zero_in_second_register
++
++    strd    r2, r3, [r0], #8
++    b       strcpy_unalign2
++
++    .p2align 2
++    // Can read 1 byte before possibly crossing a page.
++strcpy_unalign1:
++    ldrb    r2, [r1]
++    cbz     r2, strcpy_unalign_copy1byte
++
++    ldr     r2, [r1], #4
++    ldr     r3, [r1], #4
++
++    pld     [r1, #64]
++
++    sub     ip, r2, #0x01010101
++    bic     ip, ip, r2
++    ands    ip, ip, #0x80808080
++    bne     strcpy_zero_in_first_register
++
++    sub     ip, r3, #0x01010101
++    bic     ip, ip, r3
++    ands    ip, ip, #0x80808080
++    bne     strcpy_zero_in_second_register
++
++    strd    r2, r3, [r0], #8
++    b       strcpy_unalign1
++
++strcpy_unalign_copy1byte:
++    strb    r2, [r0]
++    m_pop
++
++strcpy_unalign_copy2bytes:
++    strb    r2, [r0], #1
++    strb    r4, [r0]
++    m_pop
++END(strcpy)
+diff --git a/libc/arch-arm/bionic/cortex-a15/strlen.S b/libc/arch-arm/bionic/cortex-a15/strlen.S
+new file mode 100644
+index 0000000..08f6d19
+--- /dev/null
++++ b/libc/arch-arm/bionic/cortex-a15/strlen.S
+@@ -0,0 +1,165 @@
++/*
++ * Copyright (C) 2013 The Android Open Source Project
++ * All rights reserved.
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions
++ * are met:
++ *  * Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer.
++ *  * Redistributions in binary form must reproduce the above copyright
++ *    notice, this list of conditions and the following disclaimer in
++ *    the documentation and/or other materials provided with the
++ *    distribution.
++ *
++ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
++ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
++ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
++ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
++ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
++ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
++ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
++ * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
++ * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
++ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
++ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
++ * SUCH DAMAGE.
++ */
++/*
++ * Copyright (c) 2013 ARM Ltd
++ * All rights reserved.
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions
++ * are met:
++ * 1. Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer.
++ * 2. Redistributions in binary form must reproduce the above copyright
++ *    notice, this list of conditions and the following disclaimer in the
++ *    documentation and/or other materials provided with the distribution.
++ * 3. The name of the company may not be used to endorse or promote
++ *    products derived from this software without specific prior written
++ *    permission.
++ *
++ * THIS SOFTWARE IS PROVIDED BY ARM LTD ``AS IS'' AND ANY EXPRESS OR IMPLIED
++ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
++ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
++ * IN NO EVENT SHALL ARM LTD BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
++ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
++ * TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
++ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
++ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
++ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
++ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++ */
++
++#include <machine/asm.h>
++
++    .syntax unified
++
++    .thumb
++    .thumb_func
++
++ENTRY(strlen)
++    pld     [r0, #0]
++    mov     r1, r0
++
++    ands    r3, r0, #7
++    beq     mainloop
++
++    // Align to a double word (64 bits).
++    rsb     r3, r3, #8
++    lsls    ip, r3, #31
++    beq     align_to_32
++
++    ldrb    r2, [r1], #1
++    cbz     r2, update_count_and_return
++
++align_to_32:
++    bcc     align_to_64
++    ands    ip, r3, #2
++    beq     align_to_64
++
++    ldrb    r2, [r1], #1
++    cbz     r2, update_count_and_return
++    ldrb    r2, [r1], #1
++    cbz     r2, update_count_and_return
++
++align_to_64:
++    tst     r3, #4
++    beq     mainloop
++    ldr     r3, [r1], #4
++
++    sub     ip, r3, #0x01010101
++    bic     ip, ip, r3
++    ands    ip, ip, #0x80808080
++    bne     zero_in_second_register
++
++    .p2align 2
++mainloop:
++    ldrd    r2, r3, [r1], #8
++
++    pld     [r1, #64]
++
++    sub     ip, r2, #0x01010101
++    bic     ip, ip, r2
++    ands    ip, ip, #0x80808080
++    bne     zero_in_first_register
++
++    sub     ip, r3, #0x01010101
++    bic     ip, ip, r3
++    ands    ip, ip, #0x80808080
++    bne     zero_in_second_register
++    b       mainloop
++
++update_count_and_return:
++    sub     r0, r1, r0
++    sub     r0, r0, #1
++    bx      lr
++
++zero_in_first_register:
++    sub     r0, r1, r0
++    lsls    r3, ip, #17
++    bne     sub8_and_return
++    bcs     sub7_and_return
++    lsls    ip, ip, #1
++    bne     sub6_and_return
++
++    sub     r0, r0, #5
++    bx      lr
++
++sub8_and_return:
++    sub     r0, r0, #8
++    bx      lr
++
++sub7_and_return:
++    sub     r0, r0, #7
++    bx      lr
++
++sub6_and_return:
++    sub     r0, r0, #6
++    bx      lr
++
++zero_in_second_register:
++    sub     r0, r1, r0
++    lsls    r3, ip, #17
++    bne     sub4_and_return
++    bcs     sub3_and_return
++    lsls    ip, ip, #1
++    bne     sub2_and_return
++
++    sub     r0, r0, #1
++    bx      lr
++
++sub4_and_return:
++    sub     r0, r0, #4
++    bx      lr
++
++sub3_and_return:
++    sub     r0, r0, #3
++    bx      lr
++
++sub2_and_return:
++    sub     r0, r0, #2
++    bx      lr
++END(strlen)
+diff --git a/libc/arch-arm/bionic/strlen.c b/libc/arch-arm/bionic/strlen.c
+index 01632e3..ca0669d 100644
+--- a/libc/arch-arm/bionic/strlen.c
++++ b/libc/arch-arm/bionic/strlen.c
+@@ -60,52 +60,52 @@ size_t strlen(const char *s)
+     // We need to process 32 bytes per loop to schedule PLD properly
+     // and achieve the maximum bus speed.
+     asm(
+-        "ldr     %[v], [ %[s] ], #4         \n"
++        "ldr     %[v], [%[s]], #4           \n"
+         "sub     %[l], %[l], %[s]           \n"
+         "0:                                 \n"
+ #if __ARM_HAVE_PLD
+-        "pld     [ %[s], #64 ]              \n"
++        "pld     [%[s], #64]                \n"
+ #endif
+         "sub     %[t], %[v], %[mask], lsr #7\n"
+         "and     %[t], %[t], %[mask]        \n"
+         "bics    %[t], %[t], %[v]           \n"
+-        "ldreq   %[v], [ %[s] ], #4         \n"
++        "ldreq   %[v], [%[s]], #4           \n"
+ #if !defined(__OPTIMIZE_SIZE__)
+         "bne     1f                         \n"
+         "sub     %[t], %[v], %[mask], lsr #7\n"
+         "and     %[t], %[t], %[mask]        \n"
+         "bics    %[t], %[t], %[v]           \n"
+-        "ldreq   %[v], [ %[s] ], #4         \n"
++        "ldreq   %[v], [%[s]], #4           \n"
+         "bne     1f                         \n"
+         "sub     %[t], %[v], %[mask], lsr #7\n"
+         "and     %[t], %[t], %[mask]        \n"
+         "bics    %[t], %[t], %[v]           \n"
+-        "ldreq   %[v], [ %[s] ], #4         \n"
++        "ldreq   %[v], [%[s]], #4           \n"
+         "bne     1f                         \n"
+         "sub     %[t], %[v], %[mask], lsr #7\n"
+         "and     %[t], %[t], %[mask]        \n"
+         "bics    %[t], %[t], %[v]           \n"
+-        "ldreq   %[v], [ %[s] ], #4         \n"
++        "ldreq   %[v], [%[s]], #4           \n"
+         "bne     1f                         \n"
+         "sub     %[t], %[v], %[mask], lsr #7\n"
+         "and     %[t], %[t], %[mask]        \n"
+         "bics    %[t], %[t], %[v]           \n"
+-        "ldreq   %[v], [ %[s] ], #4         \n"
++        "ldreq   %[v], [%[s]], #4           \n"
+         "bne     1f                         \n"
+         "sub     %[t], %[v], %[mask], lsr #7\n"
+         "and     %[t], %[t], %[mask]        \n"
+         "bics    %[t], %[t], %[v]           \n"
+-        "ldreq   %[v], [ %[s] ], #4         \n"
++        "ldreq   %[v], [%[s]], #4           \n"
+         "bne     1f                         \n"
+         "sub     %[t], %[v], %[mask], lsr #7\n"
+         "and     %[t], %[t], %[mask]        \n"
+         "bics    %[t], %[t], %[v]           \n"
+-        "ldreq   %[v], [ %[s] ], #4         \n"
++        "ldreq   %[v], [%[s]], #4           \n"
+         "bne     1f                         \n"
+         "sub     %[t], %[v], %[mask], lsr #7\n"
+         "and     %[t], %[t], %[mask]        \n"
+         "bics    %[t], %[t], %[v]           \n"
+-        "ldreq   %[v], [ %[s] ], #4         \n"
++        "ldreq   %[v], [%[s]], #4           \n"
+ #endif
+         "beq     0b                         \n"
+         "1:                                 \n"
+diff --git a/libc/bionic/logd_write.c b/libc/bionic/logd_write.c
+index ac71689..547809b 100644
+--- a/libc/bionic/logd_write.c
++++ b/libc/bionic/logd_write.c
+@@ -247,3 +247,10 @@ void __libc_android_log_event_uid(int32_t tag)
+ {
+     __libc_android_log_event_int(tag, getuid());
+ }
++
++void __fortify_chk_fail(const char *msg, uint32_t tag) {
++  if (tag != 0) {
++        __libc_android_log_print(ANDROID_LOG_FATAL, "libc", msg);
++        __libc_android_log_event_uid(tag);
++  }
++}
+diff --git a/libc/private/libc_events.h b/libc/private/libc_events.h
+new file mode 100644
+index 0000000..5d20f4b
+--- /dev/null
++++ b/libc/private/libc_events.h
+@@ -0,0 +1,48 @@
++/*
++ * Copyright (C) 2013 The Android Open Source Project
++ * All rights reserved.
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions
++ * are met:
++ *  * Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer.
++ *  * Redistributions in binary form must reproduce the above copyright
++ *    notice, this list of conditions and the following disclaimer in
++ *    the documentation and/or other materials provided with the
++ *    distribution.
++ *
++ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
++ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
++ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
++ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
++ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
++ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
++ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
++ * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
++ * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
++ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
++ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
++ * SUCH DAMAGE.
++ */
++
++#ifndef _LIBC_EVENTS_H
++#define _LIBC_EVENTS_H
++
++
++// This is going to be included in assembler code so only allow #define
++// values instead of defining an enum.
++
++#define BIONIC_EVENT_MEMCPY_BUFFER_OVERFLOW   80100
++#define BIONIC_EVENT_STRCAT_BUFFER_OVERFLOW   80105
++#define BIONIC_EVENT_MEMMOVE_BUFFER_OVERFLOW  80110
++#define BIONIC_EVENT_STRNCAT_BUFFER_OVERFLOW  80115
++#define BIONIC_EVENT_STRNCPY_BUFFER_OVERFLOW  80120
++#define BIONIC_EVENT_MEMSET_BUFFER_OVERFLOW   80125
++#define BIONIC_EVENT_STRCPY_BUFFER_OVERFLOW   80130
++
++#define BIONIC_EVENT_RESOLVER_OLD_RESPONSE    80300
++#define BIONIC_EVENT_RESOLVER_WRONG_SERVER    80305
++#define BIONIC_EVENT_RESOLVER_WRONG_QUERY     80310
++
++#endif // _LIBC_EVENTS_H
+diff --git a/libc/private/logd.h b/libc/private/logd.h
+index c81a91a..21eff87 100644
+--- a/libc/private/logd.h
++++ b/libc/private/logd.h
+@@ -70,6 +70,8 @@ int __libc_android_log_vprint(int prio, const char *tag, const char *fmt, va_lis
+ void __libc_android_log_event_int(int32_t tag, int value);
+ void __libc_android_log_event_uid(int32_t tag);
+ 
++void __fortify_chk_fail(const char* msg, uint32_t event_tag);
++
+ #ifdef __cplusplus
+ };
+ #endif
+diff --git a/libm/Android.mk b/libm/Android.mk
+index 45f8875..fcc1f89 100644
+--- a/libm/Android.mk
++++ b/libm/Android.mk
+@@ -53,7 +53,6 @@ libm_common_src_files:= \
+ 	src/e_scalbf.c \
+ 	src/e_sinh.c \
+ 	src/e_sinhf.c \
+-	src/e_sqrt.c \
+ 	src/k_cos.c \
+ 	src/k_cosf.c \
+ 	src/k_rem_pio2.c \
+@@ -157,32 +156,36 @@ ifeq ($(TARGET_ARCH),arm)
+ 	src/e_ldexpf.c \
+ 	src/s_scalbln.c \
+ 	src/s_scalbn.c \
+-	src/s_scalbnf.c \
+-	src/e_sqrtf.c
++	src/s_scalbnf.c
+ 
+   ifeq ($(TARGET_USE_KRAIT_BIONIC_OPTIMIZATION),true)
+     libm_common_src_files += \
+ 	  arm/e_pow.S \
+ 	  arm/s_cos.S \
+-	  arm/s_sin.S
++	  arm/s_sin.S \
++	  arm/e_sqrtf.S \
++	  arm/e_sqrt.S
+     libm_common_cflags += -DKRAIT_NEON_OPTIMIZATION -fno-if-conversion
+   else
+     libm_common_src_files += \
+ 	  src/s_cos.c \
+-      src/s_sin.c
++	  src/s_sin.c \
++	  src/e_sqrtf.c \
++	  src/e_sqrt.c
+   endif
+ 
+   ifeq ($(TARGET_USE_SPARROW_BIONIC_OPTIMIZATION),true)
+     libm_common_src_files += \
+-          arm/e_pow.S
++	  arm/e_pow.S
+     libm_common_cflags += -DSPARROW_NEON_OPTIMIZATION
+   endif
+ 
+   libm_common_includes = $(LOCAL_PATH)/arm
+ else
+   libm_common_src_files += \
+-        src/s_cos.c \
+-        src/s_sin.c
++	src/s_cos.c \
++	src/s_sin.c \
++	src/e_sqrt.c
+ endif
+ 
+ ifeq ($(TARGET_OS)-$(TARGET_ARCH),linux-x86)
+diff --git a/libm/arm/e_pow.S b/libm/arm/e_pow.S
+index 853615c..8a8f690 100644
+--- a/libm/arm/e_pow.S
++++ b/libm/arm/e_pow.S
+@@ -440,4 +440,4 @@ ENTRY(pow_neon)
+ 
+ .Ltwoto1o4: @ 2^1/4
+     .long       0x0a31b715, 0x3ff306fe
+-END(pow)
++END(pow_neon)
+diff --git a/libm/arm/e_sqrt.S b/libm/arm/e_sqrt.S
+new file mode 100644
+index 0000000..28dc647
+--- /dev/null
++++ b/libm/arm/e_sqrt.S
+@@ -0,0 +1,36 @@
++@ Copyright (c) 2013, The Linux Foundation. All rights reserved.
++@
++@ Redistribution and use in source and binary forms, with or without
++@ modification, are permitted provided that the following conditions are
++@ met:
++@     * Redistributions of source code must retain the above copyright
++@       notice, this list of conditions and the following disclaimer.
++@     * Redistributions in binary form must reproduce the above
++@       copyright notice, this list of conditions and the following
++@       disclaimer in the documentation and/or other materials provided
++@       with the distribution.
++@     * Neither the name of The Linux Foundation nor the names of its
++@       contributors may be used to endorse or promote products derived
++@       from this software without specific prior written permission.
++@
++@ THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
++@ WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
++@ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT
++@ ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS
++@ BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
++@ CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
++@ SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
++@ BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
++@ WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
++@ OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
++@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++
++#include <machine/cpu-features.h>
++#include <machine/asm.h>
++
++ENTRY(sqrt)
++    vmov.f64    d0, r0, r1
++    vsqrt.f64   d0, d0
++    vmov.f64    r0, r1, d0
++    bx          lr
++END(sqrt)
+diff --git a/libm/arm/e_sqrtf.S b/libm/arm/e_sqrtf.S
+new file mode 100644
+index 0000000..4f2e4a0
+--- /dev/null
++++ b/libm/arm/e_sqrtf.S
+@@ -0,0 +1,36 @@
++@ Copyright (c) 2013, The Linux Foundation. All rights reserved.
++@
++@ Redistribution and use in source and binary forms, with or without
++@ modification, are permitted provided that the following conditions are
++@ met:
++@     * Redistributions of source code must retain the above copyright
++@       notice, this list of conditions and the following disclaimer.
++@     * Redistributions in binary form must reproduce the above
++@       copyright notice, this list of conditions and the following
++@       disclaimer in the documentation and/or other materials provided
++@       with the distribution.
++@     * Neither the name of The Linux Foundation nor the names of its
++@       contributors may be used to endorse or promote products derived
++@       from this software without specific prior written permission.
++@
++@ THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
++@ WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
++@ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT
++@ ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS
++@ BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
++@ CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
++@ SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
++@ BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
++@ WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
++@ OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
++@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++
++#include <machine/cpu-features.h>
++#include <machine/asm.h>
++
++ENTRY(sqrtf)
++    vmov.f32    s0, r0
++    vsqrt.f32   s0, s0
++    vmov.f32    r0, s0
++    bx          lr
++END(sqrtf)
+diff --git a/linker/linker_format.c b/linker/linker_format.c
+index f60e259..74aafd2 100644
+--- a/linker/linker_format.c
++++ b/linker/linker_format.c
+@@ -167,7 +167,7 @@ format_buffer(char *buff, size_t buffsize, const char *format, ...)
+  * about 25 KB of C library routines related to formatting.
+  */
+ int
+-vsnprintf(char *buff, size_t bufsize, const char *format, va_list args)
++_vsnprintf(char *buff, size_t bufsize, const char *format, va_list args)
+ {
+     return format_buffer(buff, bufsize, format, args);
+ }
+@@ -182,7 +182,7 @@ snprintf(char* buff, size_t bufsize, const char* format, ...)
+     va_list args;
+     int ret;
+     va_start(args, format);
+-    ret = vsnprintf(buff, bufsize, format, args);
++    ret = _vsnprintf(buff, bufsize, format, args);
+     va_end(args);
+     return ret;
+ }
+-- 
+1.7.9.5
+

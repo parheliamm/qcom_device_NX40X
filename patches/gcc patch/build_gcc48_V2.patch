@@ -1,0 +1,59 @@
+diff --git a/core/combo/TARGET_linux-arm.mk b/core/combo/TARGET_linux-arm.mk
+index 854037d..8583095 100644
+--- a/core/combo/TARGET_linux-arm.mk
++++ b/core/combo/TARGET_linux-arm.mk
+@@ -43,7 +43,7 @@ include $(TARGET_ARCH_SPECIFIC_MAKEFILE)
+ 
+ # You can set TARGET_TOOLS_PREFIX to get gcc from somewhere else
+ ifeq ($(strip $(TARGET_TOOLS_PREFIX)),)
+-TARGET_TOOLCHAIN_ROOT := prebuilts/gcc/$(HOST_PREBUILT_TAG)/arm/arm-linux-androideabi-4.6
++TARGET_TOOLCHAIN_ROOT := prebuilts/gcc/$(HOST_PREBUILT_TAG)/arm/arm-linux-androideabi-4.8
+ TARGET_TOOLS_PREFIX := $(TARGET_TOOLCHAIN_ROOT)/bin/arm-linux-androideabi-
+ endif
+ 
+@@ -118,9 +118,9 @@ TARGET_GLOBAL_CFLAGS += $(TARGET_ANDROID_CONFIG_CFLAGS)
+ # We cannot turn it off blindly since the option is not available
+ # in gcc-4.4.x.  We also want to disable sincos optimization globally
+ # by turning off the builtin sin function.
+-ifneq ($(filter 4.6 4.6.%, $(shell $(TARGET_CC) --version)),)
++ifneq ($(filter 4.8 4.8.%, $(shell $(TARGET_CC) --version)),)
+ TARGET_GLOBAL_CFLAGS += -Wno-unused-but-set-variable -fno-builtin-sin \
+-			-fno-strict-volatile-bitfields
++			-fno-strict-volatile-bitfields -Wno-unused-parameter -Wno-sizeof-pointer-memaccess
+ endif
+ 
+ # This is to avoid the dreaded warning compiler message:
+diff --git a/core/combo/arch/arm/armv7-a-neon.mk b/core/combo/arch/arm/armv7-a-neon.mk
+index 32273ff..7baf5f7 100644
+--- a/core/combo/arch/arm/armv7-a-neon.mk
++++ b/core/combo/arch/arm/armv7-a-neon.mk
+@@ -18,6 +18,7 @@ ARCH_ARM_HAVE_NEON              := true
+ #
+ arch_variant_cflags := \
+     -march=armv7-a \
++    -mtune=cortex-a15 \
+     -mfloat-abi=softfp \
+     -mfpu=neon
+ 
+diff --git a/envsetup.sh b/envsetup.sh
+index b57a272..2067ce9 100644
+--- a/envsetup.sh
++++ b/envsetup.sh
+@@ -122,7 +122,7 @@ function setpaths()
+     case $ARCH in
+         x86) toolchaindir=x86/i686-linux-android-4.6/bin
+             ;;
+-        arm) toolchaindir=arm/arm-linux-androideabi-4.6/bin
++        arm) toolchaindir=arm/arm-linux-androideabi-4.8/bin
+             ;;
+         mips) toolchaindir=mips/mipsel-linux-android-4.6/bin
+             ;;
+@@ -138,7 +138,7 @@ function setpaths()
+     unset ARM_EABI_TOOLCHAIN ARM_EABI_TOOLCHAIN_PATH
+     case $ARCH in
+         arm)
+-            toolchaindir=arm/arm-eabi-4.6/bin
++            toolchaindir=arm/arm-eabi-4.8/bin
+             if [ -d "$gccprebuiltdir/$toolchaindir" ]; then
+                  export ARM_EABI_TOOLCHAIN="$gccprebuiltdir/$toolchaindir"
+                  ARM_EABI_TOOLCHAIN_PATH=":$gccprebuiltdir/$toolchaindir"
