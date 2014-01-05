@@ -55,14 +55,14 @@ start_sensors()
 
 start_battery_monitor()
 {
-	chown root.system /sys/module/pm8921_bms/parameters/*
-	chown root.system /sys/bus/platform/devices/pm8921-bms/fcc_data
-	chown root.system /sys/bus/platform/devices/pm8921-bms/fcc_temp
-	chown root.system /sys/bus/platform/devices/pm8921-bms/fcc_chgcyl
-	chmod 0660 /sys/module/pm8921_bms/parameters/*
+	chown -h root.system /sys/module/pm8921_bms/parameters/*
+	chown -h root.system /sys/bus/platform/devices/pm8921-bms/fcc_data
+	chown -h root.system /sys/bus/platform/devices/pm8921-bms/fcc_temp
+	chown -h root.system /sys/bus/platform/devices/pm8921-bms/fcc_chgcyl
+	chmod -h 0660 /sys/module/pm8921_bms/parameters/*
 	mkdir -p /data/bms
-	chown root.system /data/bms
-	chmod 0770 /data/bms
+	chown -h root.system /data/bms
+	chmod -h 0770 /data/bms
 	start battery_monitor
 }
 
